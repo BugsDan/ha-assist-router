@@ -13,6 +13,7 @@ import pytest
 
 pytest.importorskip("homeassistant", reason="Requires installed Home Assistant 2026.10.2 on Linux")
 
+from homeassistant import bootstrap, loader
 from homeassistant.components import conversation
 from homeassistant.components.conversation.const import DATA_COMPONENT
 from homeassistant.core import Context, HomeAssistant
@@ -60,6 +61,28 @@ async def test_real_core_entity_chatlog_followup_and_failure(tmp_path, fail, sha
             return conversation.ConversationResult(response, chat_log.conversation_id, True)
 
     try:
+        # A bare HomeAssistant object does not initialize its loader, registries,
+        # auth or config entries. Use the normal bootstrap, with isolated storage
+        # and explicit core settings so startup needs no location lookup.
+        loader.async_setup(hass)
+        assert (
+            await bootstrap.async_from_config_dict(
+                {
+                    "homeassistant": {
+                        "name": "Router CI",
+                        "latitude": 0,
+                        "longitude": 0,
+                        "elevation": 0,
+                        "unit_system": "metric",
+                        "time_zone": "UTC",
+                        "country": "CH",
+                    },
+                    "conversation": {},
+                },
+                hass,
+            )
+            is hass
+        )
         assert await async_setup_component(hass, "conversation", {})
         component = hass.data[DATA_COMPONENT]
         leaf = Leaf()
