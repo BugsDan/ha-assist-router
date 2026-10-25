@@ -1,0 +1,278 @@
+{
+  "title": "Assist Router",
+  "config": {
+    "step": {
+      "order": {
+        "title": "Select and order agents",
+        "description": "Priority is top to bottom. Add, remove or drag entities to reorder. Health checks remain bound to the entity ID. New agents are enabled. A position dialog is available in the menu.",
+        "data": {
+          "agent_order": "Agents in priority order"
+        }
+      },
+      "manage": {
+        "title": "Configure Assist Router",
+        "description": "Current order (✓ enabled, – disabled):\n{agents}\n\nChanges are applied only when you choose Save.",
+        "menu_options": {
+          "order": "Select, order or remove agents",
+          "position": "Change an agent position",
+          "enabled": "Enable or disable agents",
+          "health_agent": "Configure an agent health check",
+          "finish": "Save",
+          "shared_prompt": "Edit shared prompt",
+          "agent_prompt": "Edit an agent addition",
+          "prompt_review": "Review and approve agent baseline"
+        }
+      },
+      "position": {
+        "title": "Move an agent",
+        "data": {
+          "entity_id": "Agent",
+          "position": "Position (1 = highest priority)"
+        }
+      },
+      "enabled": {
+        "title": "Select enabled agents",
+        "description": "Unselected agents retain their settings but will not be called. Keep at least one enabled.",
+        "data": {
+          "enabled_agents": "Enabled agents"
+        }
+      },
+      "health_agent": {
+        "title": "Choose an agent for health configuration",
+        "data": {
+          "entity_id": "Agent"
+        }
+      },
+      "health_type": {
+        "title": "Availability check type",
+        "description": "Without a health check, only HA entity availability is used. Checks run before delegation and are cached.",
+        "data": {
+          "kind": "Check type"
+        }
+      },
+      "health": {
+        "title": "Configure availability check",
+        "description": "Read-only HTTP GET; no model loading or inference. LM Studio: enter the full /api/v1/models endpoint. Empty secret fields retain credentials only at the same endpoint. Loaded checks the model and optional instance; Present also accepts an unloaded model.",
+        "data": {
+          "url": "Full health endpoint URL",
+          "auth_type": "Authentication",
+          "username": "Basic username",
+          "token": "Bearer token (empty = retain at same endpoint)",
+          "password": "Basic password (empty = retain at same endpoint)",
+          "clear_credentials": "Remove credentials and disable authentication",
+          "timeout": "Total check timeout (seconds)",
+          "cache_seconds": "Ready-result cache (seconds)",
+          "failure_cache_seconds": "Unavailable-result cache (seconds)",
+          "expected_status": "Expected successful HTTP status (200–299)",
+          "model_key": "Exact model key (models[].key)",
+          "instance_id": "Loaded instance ID (empty = any instance of this model)",
+          "model_state": "Expected model state"
+        }
+      },
+      "shared_prompt": {
+        "title": "Shared business instructions",
+        "description": "Off by default. This text supplements neutral agent baselines and HA tool instructions; it does not replace them exclusively. All active agents need review. Changes, enabling and disabling require new conversations. Migrate baselines manually in the existing agent dialogs.",
+        "data": {
+          "enabled": "Enable shared additions",
+          "text": "Shared prompt (multiline literal text)",
+          "acknowledge_additive": "I understand the additive behavior and new-conversation requirement"
+        }
+      },
+      "agent_prompt": {
+        "title": "Select agent for optional addition",
+        "data": {
+          "entity_id": "Agent"
+        }
+      },
+      "agent_prompt_text": {
+        "title": "Individual addition",
+        "description": "{agent}: Optional literal addition after the shared text. Clear to remove. Applies only when shared additions are enabled. Changes to active agents require new conversations.",
+        "data": {
+          "text": "Addition (optional, multiline)"
+        }
+      },
+      "prompt_review": {
+        "title": "Review agent baseline and implementation",
+        "description": "Read-only review. Back up the old prompt, move business rules into the router, then replace the baseline in the existing agent dialog with the neutral text shown next. Keep tool selection. Wait for agent reload. Unknown source versions are rejected.",
+        "data": {
+          "entity_id": "Agent"
+        }
+      },
+      "prompt_review_confirm": {
+        "title": "Confirm read-only review",
+        "description": "Agent: {agent}\nIntegration: {domain}\nStatus: {status}\nConfiguration fingerprint (SHA-256): {fingerprint}\nSource fingerprints: {sources}\n\nOnly ready can be confirmed. The existing agent dialog must contain the exact neutral baseline. Narrow parameter allowlist: reasoning_effort=none and constant enable_thinking=false with the audited llama.cpp mixin. Unknown or dynamic values remain blocked. All parameters stay fingerprinted; changes require review. Confirmation saves only a fingerprint in the router. Choose Save to apply. External tool prompts and backend templates remain outside this review.",
+        "data": {
+          "neutral_baseline": "Neutral baseline (copy)",
+          "confirm": "Confirm reviewed result and remaining agent/tool settings"
+        }
+      }
+    },
+    "error": {
+      "invalid_agents": "Select distinct conversation entities; the built-in HA agent and routers cannot be targets.",
+      "no_active_agents": "At least one configured agent must remain enabled.",
+      "invalid_position": "Choose an existing agent and a valid position.",
+      "invalid_health": "Choose a supported availability check.",
+      "invalid_url": "Use an HTTP(S) URL without URL credentials, query or fragment.",
+      "invalid_auth": "Check authentication credentials. Bearer needs a token; Basic needs a username without a colon. Control characters are not allowed.",
+      "invalid_model": "Enter an exact model key. Instance ID is optional for loaded models; leave it empty for the present-only predicate.",
+      "invalid_budget": "Use finite values within the displayed limits.",
+      "invalid_status": "The expected status must be an integer from 200 to 299.",
+      "invalid_prompt": "Prompts must be text up to 32768 characters; enabled shared text cannot be blank. Review fingerprints must be valid.",
+      "acknowledge_additive": "Confirm additive behavior and conversation boundaries.",
+      "prompt_review_required": "All active agents need a current compatible prompt review. Select an agent and inspect its status.",
+      "prompt_not_compatible": "Review is incompatible. Inspect the status; no agent is modified or bypassed.",
+      "prompt_changed": "Agent configuration changed since display. Review the new fingerprint before confirming again.",
+      "prompt_confirm_required": "Explicitly confirm the review result."
+    },
+    "abort": {
+      "single_instance_allowed": "Only one Assist Router entry is supported."
+    }
+  },
+  "options": {
+    "step": {
+      "order": {
+        "title": "Select and order agents",
+        "description": "Priority is top to bottom. Add, remove or drag entities to reorder. Health checks remain bound to the entity ID. New agents are enabled. A position dialog is available in the menu.",
+        "data": {
+          "agent_order": "Agents in priority order"
+        }
+      },
+      "manage": {
+        "title": "Configure Assist Router",
+        "description": "Current order (✓ enabled, – disabled):\n{agents}\n\nChanges are applied only when you choose Save.",
+        "menu_options": {
+          "order": "Select, order or remove agents",
+          "position": "Change an agent position",
+          "enabled": "Enable or disable agents",
+          "health_agent": "Configure an agent health check",
+          "finish": "Save",
+          "shared_prompt": "Edit shared prompt",
+          "agent_prompt": "Edit an agent addition",
+          "prompt_review": "Review and approve agent baseline"
+        }
+      },
+      "position": {
+        "title": "Move an agent",
+        "data": {
+          "entity_id": "Agent",
+          "position": "Position (1 = highest priority)"
+        }
+      },
+      "enabled": {
+        "title": "Select enabled agents",
+        "description": "Unselected agents retain their settings but will not be called. Keep at least one enabled.",
+        "data": {
+          "enabled_agents": "Enabled agents"
+        }
+      },
+      "health_agent": {
+        "title": "Choose an agent for health configuration",
+        "data": {
+          "entity_id": "Agent"
+        }
+      },
+      "health_type": {
+        "title": "Availability check type",
+        "description": "Without a health check, only HA entity availability is used. Checks run before delegation and are cached.",
+        "data": {
+          "kind": "Check type"
+        }
+      },
+      "health": {
+        "title": "Configure availability check",
+        "description": "Read-only HTTP GET; no model loading or inference. LM Studio: enter the full /api/v1/models endpoint. Empty secret fields retain credentials only at the same endpoint. Loaded checks the model and optional instance; Present also accepts an unloaded model.",
+        "data": {
+          "url": "Full health endpoint URL",
+          "auth_type": "Authentication",
+          "username": "Basic username",
+          "token": "Bearer token (empty = retain at same endpoint)",
+          "password": "Basic password (empty = retain at same endpoint)",
+          "clear_credentials": "Remove credentials and disable authentication",
+          "timeout": "Total check timeout (seconds)",
+          "cache_seconds": "Ready-result cache (seconds)",
+          "failure_cache_seconds": "Unavailable-result cache (seconds)",
+          "expected_status": "Expected successful HTTP status (200–299)",
+          "model_key": "Exact model key (models[].key)",
+          "instance_id": "Loaded instance ID (empty = any instance of this model)",
+          "model_state": "Expected model state"
+        }
+      },
+      "shared_prompt": {
+        "title": "Shared business instructions",
+        "description": "Off by default. This text supplements neutral agent baselines and HA tool instructions; it does not replace them exclusively. All active agents need review. Changes, enabling and disabling require new conversations. Migrate baselines manually in the existing agent dialogs.",
+        "data": {
+          "enabled": "Enable shared additions",
+          "text": "Shared prompt (multiline literal text)",
+          "acknowledge_additive": "I understand the additive behavior and new-conversation requirement"
+        }
+      },
+      "agent_prompt": {
+        "title": "Select agent for optional addition",
+        "data": {
+          "entity_id": "Agent"
+        }
+      },
+      "agent_prompt_text": {
+        "title": "Individual addition",
+        "description": "{agent}: Optional literal addition after the shared text. Clear to remove. Applies only when shared additions are enabled. Changes to active agents require new conversations.",
+        "data": {
+          "text": "Addition (optional, multiline)"
+        }
+      },
+      "prompt_review": {
+        "title": "Review agent baseline and implementation",
+        "description": "Read-only review. Back up the old prompt, move business rules into the router, then replace the baseline in the existing agent dialog with the neutral text shown next. Keep tool selection. Wait for agent reload. Unknown source versions are rejected.",
+        "data": {
+          "entity_id": "Agent"
+        }
+      },
+      "prompt_review_confirm": {
+        "title": "Confirm read-only review",
+        "description": "Agent: {agent}\nIntegration: {domain}\nStatus: {status}\nConfiguration fingerprint (SHA-256): {fingerprint}\nSource fingerprints: {sources}\n\nOnly ready can be confirmed. The existing agent dialog must contain the exact neutral baseline. Narrow parameter allowlist: reasoning_effort=none and constant enable_thinking=false with the audited llama.cpp mixin. Unknown or dynamic values remain blocked. All parameters stay fingerprinted; changes require review. Confirmation saves only a fingerprint in the router. Choose Save to apply. External tool prompts and backend templates remain outside this review.",
+        "data": {
+          "neutral_baseline": "Neutral baseline (copy)",
+          "confirm": "Confirm reviewed result and remaining agent/tool settings"
+        }
+      }
+    },
+    "error": {
+      "invalid_agents": "Select distinct conversation entities; the built-in HA agent and routers cannot be targets.",
+      "no_active_agents": "At least one configured agent must remain enabled.",
+      "invalid_position": "Choose an existing agent and a valid position.",
+      "invalid_health": "Choose a supported availability check.",
+      "invalid_url": "Use an HTTP(S) URL without URL credentials, query or fragment.",
+      "invalid_auth": "Check authentication credentials. Bearer needs a token; Basic needs a username without a colon. Control characters are not allowed.",
+      "invalid_model": "Enter an exact model key. Instance ID is optional for loaded models; leave it empty for the present-only predicate.",
+      "invalid_budget": "Use finite values within the displayed limits.",
+      "invalid_status": "The expected status must be an integer from 200 to 299.",
+      "invalid_prompt": "Prompts must be text up to 32768 characters; enabled shared text cannot be blank. Review fingerprints must be valid.",
+      "acknowledge_additive": "Confirm additive behavior and conversation boundaries.",
+      "prompt_review_required": "All active agents need a current compatible prompt review. Select an agent and inspect its status.",
+      "prompt_not_compatible": "Review is incompatible. Inspect the status; no agent is modified or bypassed.",
+      "prompt_changed": "Agent configuration changed since display. Review the new fingerprint before confirming again.",
+      "prompt_confirm_required": "Explicitly confirm the review result."
+    }
+  },
+  "selector": {
+    "check_kind": {
+      "options": {
+        "none": "None (HA entity only)",
+        "http": "HTTP-Status",
+        "lm_studio": "LM Studio /api/v1/models"
+      }
+    },
+    "auth_type": {
+      "options": {
+        "none": "None",
+        "bearer": "Bearer-Token",
+        "basic": "HTTP Basic"
+      }
+    },
+    "model_state": {
+      "options": {
+        "loaded": "Loaded (recommended)",
+        "present": "Present (including unloaded)"
+      }
+    }
+  }
+}

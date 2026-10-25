@@ -1,0 +1,75 @@
+{
+  "date": "2026-10-23",
+  "integration_version": "1.2.1",
+  "config_entry_version": 3,
+  "config_entry_minor_version": 1,
+  "target_home_assistant": "2026.10.2",
+  "local_platform": "Windows",
+  "local_python": "3.12.10",
+  "tests": {
+    "tests": 220,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 1,
+    "passed": 219,
+    "seconds": 29.539
+  },
+  "checks": [
+    {
+      "command": "python tools/check_ha_api.py",
+      "result": "passed",
+      "evidence": "ha_api_evidence.json"
+    },
+    {
+      "command": "python tools/check_prompt_compatibility.py",
+      "result": "passed; no live inference",
+      "evidence": "prompt_compatibility_evidence.json"
+    },
+    {
+      "command": "python tools/generate_prompt_contracts.py",
+      "result": "passed; installed hashes generated from audited references"
+    },
+    {
+      "command": "python -m pytest tests tests_live -q --tb=short --junitxml=docs/test-results.xml",
+      "result": "passed; real HA collection skipped locally"
+    },
+    {
+      "command": "python -m ruff check custom_components tests tests_live tools",
+      "result": "passed"
+    },
+    {
+      "command": "python -m ruff format --check custom_components tests tests_live tools",
+      "result": "passed; 29 files"
+    },
+    {
+      "command": "python -m compileall -q custom_components",
+      "result": "passed"
+    },
+    {
+      "command": "UI JSON/translation field parity, config/options forms/errors, manifest and source metadata checks",
+      "result": "passed; setup-only abort text intentionally has no options counterpart"
+    },
+    {
+      "command": "python tools/build_release.py",
+      "result": "CRC, exact file contents, UTF-8 JSON, paths and exclusions verified by release builder; SHA-256 in dist/SHA256SUMS.txt"
+    }
+  ],
+  "actual_home_assistant_runtime": "not executed: requires Linux / Python >=3.14.2; tests_live includes off/on shared additions with fake leaf and inspector",
+  "visible_ha_frontend": "not executed: exact pinned selector/menu schemas tested with host doubles",
+  "production_endpoints": "not called by implementation tests; no model inference or tool side effects",
+  "installed_local_openai": "unknown; enabled mode requires matching audited source files and reviewed baseline; no guessed version",
+  "production_automation": "not modified",
+  "target_entries": "read only; neutral baseline migration remains manual in existing target UI",
+  "default_prompt_mode": "disabled; migration writes only router entry",
+  "package_verification": "tools/build_release.py verifies install/source archives; SHA-256 in dist/SHA256SUMS.txt",
+  "parameter_policy": {
+    "allowed": "reasoning_effort=none; constant enable_thinking=false only on the audited llama.cpp override path with native false/default",
+    "unknown_dynamic_or_prompt_changing": "blocked",
+    "raw_fingerprint_inputs": "unchanged; allowed parameters, spelling, order, addition and removal all remain covered",
+    "actual_local_config_export": "not supplied; audited source schema and user-reported values, installed config checked readonly at runtime",
+    "native_override": "conflicting native True/string value rejected when explicit false supplied",
+    "live_backend_effect": "not tested; request builders captured without inference"
+  },
+  "test_dependencies": "Jinja2==3.1.6 matches pinned HA pyproject; actual Jinja rendering with HA result parsing host double",
+  "historical_zips": "1.1.0 and 1.2.0 install ZIP SHA-256 unchanged"
+}

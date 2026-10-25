@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <title>Assist Router</title>
+  <desc>Original speech bubble connecting one input to three ordered destinations.</desc>
+  <path fill="#E6EFFB" d="M48 0H208Q256 0 256 48V176Q256 224 208 224H96L48 256V224Q0 224 0 176V48Q0 0 48 0Z"/>
+  <path fill="none" stroke="#123047" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" d="M64 112H192M144 56V168M144 56H192M144 168H192"/>
+  <g fill="#087D79"><circle cx="64" cy="112" r="24"/><circle cx="192" cy="56" r="16"/><circle cx="192" cy="112" r="16"/><circle cx="192" cy="168" r="16"/></g>
+</svg>

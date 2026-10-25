@@ -1,0 +1,61 @@
+{
+  "version": "2026.10.2",
+  "sources": {
+    "homeassistant/components/conversation/entity.py": {
+      "url": "https://raw.githubusercontent.com/home-assistant/core/2026.10.2/homeassistant/components/conversation/entity.py",
+      "sha256": "44a284797beea59e2aea7640a1698298eb649a7b04c238b98644ee0084de9eff"
+    },
+    "homeassistant/components/conversation/agent_manager.py": {
+      "url": "https://raw.githubusercontent.com/home-assistant/core/2026.10.2/homeassistant/components/conversation/agent_manager.py",
+      "sha256": "1c72278e9d5f94858b1809bc899f54ff81bc4b16d8848f8bebe8a43e9da4a7f6"
+    },
+    "homeassistant/components/conversation/models.py": {
+      "url": "https://raw.githubusercontent.com/home-assistant/core/2026.10.2/homeassistant/components/conversation/models.py",
+      "sha256": "ab01f362b6e218ab64a1b170d505cdc2c6e9832254d5fc8236b85df639223e71"
+    },
+    "homeassistant/components/conversation/chat_log.py": {
+      "url": "https://raw.githubusercontent.com/home-assistant/core/2026.10.2/homeassistant/components/conversation/chat_log.py",
+      "sha256": "cbecafb79e129cb9f3632138931ca19acb027aec5887ae112013fbf62ec427ad"
+    },
+    "homeassistant/components/conversation/const.py": {
+      "url": "https://raw.githubusercontent.com/home-assistant/core/2026.10.2/homeassistant/components/conversation/const.py",
+      "sha256": "417f337811dffae62158e81b740089fc38c4f08e1f4ac34c3f4894d11e703750"
+    },
+    "homeassistant/helpers/chat_session.py": {
+      "url": "https://raw.githubusercontent.com/home-assistant/core/2026.10.2/homeassistant/helpers/chat_session.py",
+      "sha256": "3eecd17b00afe81273dab939328a7b6d90963dd5bfc9cdecf1330534bfcdc348"
+    },
+    "homeassistant/components/assist_pipeline/default_pipeline.py": {
+      "url": "https://raw.githubusercontent.com/home-assistant/core/2026.10.2/homeassistant/components/assist_pipeline/default_pipeline.py",
+      "sha256": "cc9a3b9d8cd8fa82b51533443d44500014ea16e9f442952b62c6b543d9b69a5c"
+    },
+    "homeassistant/components/conversation/__init__.py": {
+      "url": "https://raw.githubusercontent.com/home-assistant/core/2026.10.2/homeassistant/components/conversation/__init__.py",
+      "sha256": "d5aaba0c28305f9fa4a7de739a76901898c1813c551bd1716be22ba2029ada7d"
+    },
+    "homeassistant/config_entries.py": {
+      "url": "https://raw.githubusercontent.com/home-assistant/core/2026.10.2/homeassistant/config_entries.py",
+      "sha256": "221e2672e9a8f0ec12fa62edbfdc2ef6d986331855797615c81ecbe99f8840db"
+    },
+    "pyproject.toml": {
+      "url": "https://raw.githubusercontent.com/home-assistant/core/2026.10.2/pyproject.toml",
+      "sha256": "101695625e5d0eb1f5b0f563ae8d25bdd94b56f49bd2e0f055089eaf12bfd087"
+    },
+    "LICENSE.md": {
+      "url": "https://raw.githubusercontent.com/home-assistant/core/2026.10.2/LICENSE.md",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    "homeassistant/helpers/selector.py": {
+      "url": "https://raw.githubusercontent.com/home-assistant/core/2026.10.2/homeassistant/helpers/selector.py",
+      "sha256": "16385d863b426c842e78caa334ed47143e60724e33df69533699c3cd8583c254"
+    },
+    "homeassistant/data_entry_flow.py": {
+      "url": "https://raw.githubusercontent.com/home-assistant/core/2026.10.2/homeassistant/data_entry_flow.py",
+      "sha256": "b8c56b358d7e2ee70958e2ddc32d7f8bda8a5c1996d813b90575568ab4990b7d"
+    },
+    "homeassistant/helpers/entity_registry.py": {
+      "url": "https://raw.githubusercontent.com/home-assistant/core/2026.10.2/homeassistant/helpers/entity_registry.py",
+      "sha256": "f77b7ae946a0902136faadb3cfe45d17aca24fa639c43189295e101f5e47f425"
+    }
+  }
+}

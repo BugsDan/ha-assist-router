@@ -1,0 +1,278 @@
+{
+  "title": "Assist Router",
+  "config": {
+    "step": {
+      "order": {
+        "title": "Agents auswählen und sortieren",
+        "description": "Reihenfolge von oben nach unten. Agents hinzufügen, entfernen und per Ziehen sortieren; Health-Einstellungen bleiben an ihrer Entity-ID. Neue Agents sind aktiviert. Alternativ Position im Menü ändern.",
+        "data": {
+          "agent_order": "Agents in Prioritätsreihenfolge"
+        }
+      },
+      "manage": {
+        "title": "Assist Router konfigurieren",
+        "description": "Aktuelle Reihenfolge (✓ aktiviert, – deaktiviert):\n{agents}\n\nÄnderungen werden erst mit Speichern übernommen.",
+        "menu_options": {
+          "order": "Agents auswählen, sortieren oder entfernen",
+          "position": "Position eines Agents ändern",
+          "enabled": "Agents aktivieren oder deaktivieren",
+          "health_agent": "Health-Prüfung eines Agents bearbeiten",
+          "finish": "Speichern",
+          "shared_prompt": "Gemeinsamen Prompt bearbeiten",
+          "agent_prompt": "Individuelle Agent-Ergänzung bearbeiten",
+          "prompt_review": "Agent-Basisprompt prüfen und freigeben"
+        }
+      },
+      "position": {
+        "title": "Agent verschieben",
+        "data": {
+          "entity_id": "Agent",
+          "position": "Position (1 = höchste Priorität)"
+        }
+      },
+      "enabled": {
+        "title": "Aktive Agents auswählen",
+        "description": "Nicht ausgewählte Agents bleiben konfiguriert, werden aber nicht aufgerufen. Mindestens einen aktivieren.",
+        "data": {
+          "enabled_agents": "Aktivierte Agents"
+        }
+      },
+      "health_agent": {
+        "title": "Agent für Health-Prüfung wählen",
+        "data": {
+          "entity_id": "Agent"
+        }
+      },
+      "health_type": {
+        "title": "Art der Verfügbarkeitsprüfung",
+        "description": "Ohne Health-Prüfung zählt nur die HA-Entity-Verfügbarkeit. Eine Health-Prüfung erfolgt vor der Agent-Übergabe und wird zwischengespeichert.",
+        "data": {
+          "kind": "Prüftyp"
+        }
+      },
+      "health": {
+        "title": "Health-Prüfung konfigurieren",
+        "description": "Nur lesende HTTP-GET-Prüfung; kein Modell laden, keine Inferenz. LM Studio: vollständigen /api/v1/models-Endpunkt angeben. Leere Geheimfelder behalten Zugangsdaten nur am gleichen Endpunkt. Geladen prüft das Modell samt optionaler Instanz; Nur vorhanden akzeptiert auch ein ungeladenes Modell.",
+        "data": {
+          "url": "Vollständige URL des Health-Endpunkts",
+          "auth_type": "Authentifizierung",
+          "username": "Basic-Benutzername",
+          "token": "Bearer-Token (leer = am gleichen Endpunkt behalten)",
+          "password": "Basic-Passwort (leer = am gleichen Endpunkt behalten)",
+          "clear_credentials": "Zugangsdaten entfernen und Authentifizierung deaktivieren",
+          "timeout": "Gesamter Prüf-Timeout in Sekunden",
+          "cache_seconds": "Cache für Bereitschaft in Sekunden",
+          "failure_cache_seconds": "Cache für Nichtverfügbarkeit in Sekunden",
+          "expected_status": "Erwarteter erfolgreicher HTTP-Status (200–299)",
+          "model_key": "Exakter Modellschlüssel (models[].key)",
+          "instance_id": "Geladene Instanz-ID (leer = beliebige Instanz dieses Modells)",
+          "model_state": "Erwarteter Modellstatus"
+        }
+      },
+      "shared_prompt": {
+        "title": "Gemeinsame Geschäftsanweisungen",
+        "description": "Standardmässig aus. Der Text ergänzt neutrale Agent-Basisprompts und HA-Werkzeuginstruktionen; er ersetzt sie nicht exklusiv. Alle aktiven Agents müssen geprüft sein. Änderungen, Aktivierung und Deaktivierung erfordern neue Gespräche. Die Basisprompts werden ausschliesslich manuell in den vorhandenen Agent-Dialogen migriert.",
+        "data": {
+          "enabled": "Zentrale Zusätze aktivieren",
+          "text": "Gemeinsamer Prompt (mehrzeilig, wörtlicher Text)",
+          "acknowledge_additive": "Ich verstehe die additive Wirkung und die erforderlichen neuen Gespräche"
+        }
+      },
+      "agent_prompt": {
+        "title": "Agent für optionale Ergänzung wählen",
+        "data": {
+          "entity_id": "Agent"
+        }
+      },
+      "agent_prompt_text": {
+        "title": "Individuelle Ergänzung",
+        "description": "{agent}: Optionaler wörtlicher Zusatz nach dem gemeinsamen Text. Leer entfernt den Zusatz. Wirkt nur bei aktivierter zentraler Verwaltung. Änderungen an aktiven Agents erfordern neue Gespräche.",
+        "data": {
+          "text": "Ergänzung (optional, mehrzeilig)"
+        }
+      },
+      "prompt_review": {
+        "title": "Agent-Basisprompt und Implementierung prüfen",
+        "description": "Prüfung ist lesend. Zuerst den alten Prompt sichern, Geschäftsregeln in den Router übernehmen und den Basisprompt im vorhandenen Agent-Dialog durch die im nächsten Schritt gezeigte neutrale Vorlage ersetzen. Werkzeugauswahl beibehalten. Danach Agent-Reload abwarten. Unbekannte Quellversionen werden abgewiesen.",
+        "data": {
+          "entity_id": "Agent"
+        }
+      },
+      "prompt_review_confirm": {
+        "title": "Lesendes Prüfergebnis bestätigen",
+        "description": "Agent: {agent}\nIntegration: {domain}\nStatus: {status}\nKonfigurations-Fingerprint (SHA-256): {fingerprint}\nQuell-Fingerprints: {sources}\n\nNur ready kann bestätigt werden. Die neutrale Vorlage muss exakt im vorhandenen Agent-Dialog stehen. Enge Parameterfreigabe: reasoning_effort=none und konstantes enable_thinking=false beim geprüften llama.cpp-Mixin. Unbekannte oder dynamische Werte bleiben gesperrt. Alle Parameter bleiben im Fingerprint; Änderungen verlangen neue Prüfung. Bestätigung speichert nur einen Fingerprint im Router. Abschliessend Speichern wählen. Externe Werkzeugprompts und Backend-Vorlagen bleiben ausserhalb dieser Prüfung.",
+        "data": {
+          "neutral_baseline": "Neutrale Basisprompt-Vorlage (kopieren)",
+          "confirm": "Prüfergebnis und übrige Agent-/Werkzeugeinstellungen bewusst bestätigen"
+        }
+      }
+    },
+    "error": {
+      "invalid_agents": "Unterschiedliche Conversation-Entities auswählen. Der native HA-Agent und Router sind keine Ziele.",
+      "no_active_agents": "Mindestens ein konfigurierter Agent muss aktiviert bleiben.",
+      "invalid_position": "Vorhandenen Agent und eine gültige Position wählen.",
+      "invalid_health": "Unterstützte Verfügbarkeitsprüfung wählen.",
+      "invalid_url": "HTTP(S)-URL ohne URL-Zugangsdaten, Query oder Fragment verwenden.",
+      "invalid_auth": "Zugangsdaten prüfen: Bearer benötigt einen Token; Basic einen Benutzernamen ohne Doppelpunkt. Steuerzeichen sind nicht erlaubt.",
+      "invalid_model": "Exakten Modellschlüssel eingeben. Instanz-ID bei geladenen Modellen optional; für Nur vorhanden leer lassen.",
+      "invalid_budget": "Endliche Werte innerhalb der angezeigten Grenzen verwenden.",
+      "invalid_status": "Erwarteter HTTP-Status muss eine ganze Zahl von 200 bis 299 sein.",
+      "invalid_prompt": "Prompt muss Text mit höchstens 32768 Zeichen sein; aktiviert darf er nicht leer sein. Prüffingerprints müssen gültig sein.",
+      "acknowledge_additive": "Bitte die additive Wirkung und die Gesprächsgrenzen bestätigen.",
+      "prompt_review_required": "Alle aktiven Agents brauchen eine aktuelle kompatible Prompt-Prüfung. Agent auswählen und Status prüfen.",
+      "prompt_not_compatible": "Prüfung nicht kompatibel. Status prüfen; keinen Agent überschreiben oder umgehen.",
+      "prompt_changed": "Agent-Konfiguration hat sich seit Anzeige geändert. Neuen Fingerprint prüfen und nochmals bestätigen.",
+      "prompt_confirm_required": "Prüfergebnis bewusst bestätigen."
+    },
+    "abort": {
+      "single_instance_allowed": "Es wird nur ein Assist-Router-Eintrag unterstützt."
+    }
+  },
+  "options": {
+    "step": {
+      "order": {
+        "title": "Agents auswählen und sortieren",
+        "description": "Reihenfolge von oben nach unten. Agents hinzufügen, entfernen und per Ziehen sortieren; Health-Einstellungen bleiben an ihrer Entity-ID. Neue Agents sind aktiviert. Alternativ Position im Menü ändern.",
+        "data": {
+          "agent_order": "Agents in Prioritätsreihenfolge"
+        }
+      },
+      "manage": {
+        "title": "Assist Router konfigurieren",
+        "description": "Aktuelle Reihenfolge (✓ aktiviert, – deaktiviert):\n{agents}\n\nÄnderungen werden erst mit Speichern übernommen.",
+        "menu_options": {
+          "order": "Agents auswählen, sortieren oder entfernen",
+          "position": "Position eines Agents ändern",
+          "enabled": "Agents aktivieren oder deaktivieren",
+          "health_agent": "Health-Prüfung eines Agents bearbeiten",
+          "finish": "Speichern",
+          "shared_prompt": "Gemeinsamen Prompt bearbeiten",
+          "agent_prompt": "Individuelle Agent-Ergänzung bearbeiten",
+          "prompt_review": "Agent-Basisprompt prüfen und freigeben"
+        }
+      },
+      "position": {
+        "title": "Agent verschieben",
+        "data": {
+          "entity_id": "Agent",
+          "position": "Position (1 = höchste Priorität)"
+        }
+      },
+      "enabled": {
+        "title": "Aktive Agents auswählen",
+        "description": "Nicht ausgewählte Agents bleiben konfiguriert, werden aber nicht aufgerufen. Mindestens einen aktivieren.",
+        "data": {
+          "enabled_agents": "Aktivierte Agents"
+        }
+      },
+      "health_agent": {
+        "title": "Agent für Health-Prüfung wählen",
+        "data": {
+          "entity_id": "Agent"
+        }
+      },
+      "health_type": {
+        "title": "Art der Verfügbarkeitsprüfung",
+        "description": "Ohne Health-Prüfung zählt nur die HA-Entity-Verfügbarkeit. Eine Health-Prüfung erfolgt vor der Agent-Übergabe und wird zwischengespeichert.",
+        "data": {
+          "kind": "Prüftyp"
+        }
+      },
+      "health": {
+        "title": "Health-Prüfung konfigurieren",
+        "description": "Nur lesende HTTP-GET-Prüfung; kein Modell laden, keine Inferenz. LM Studio: vollständigen /api/v1/models-Endpunkt angeben. Leere Geheimfelder behalten Zugangsdaten nur am gleichen Endpunkt. Geladen prüft das Modell samt optionaler Instanz; Nur vorhanden akzeptiert auch ein ungeladenes Modell.",
+        "data": {
+          "url": "Vollständige URL des Health-Endpunkts",
+          "auth_type": "Authentifizierung",
+          "username": "Basic-Benutzername",
+          "token": "Bearer-Token (leer = am gleichen Endpunkt behalten)",
+          "password": "Basic-Passwort (leer = am gleichen Endpunkt behalten)",
+          "clear_credentials": "Zugangsdaten entfernen und Authentifizierung deaktivieren",
+          "timeout": "Gesamter Prüf-Timeout in Sekunden",
+          "cache_seconds": "Cache für Bereitschaft in Sekunden",
+          "failure_cache_seconds": "Cache für Nichtverfügbarkeit in Sekunden",
+          "expected_status": "Erwarteter erfolgreicher HTTP-Status (200–299)",
+          "model_key": "Exakter Modellschlüssel (models[].key)",
+          "instance_id": "Geladene Instanz-ID (leer = beliebige Instanz dieses Modells)",
+          "model_state": "Erwarteter Modellstatus"
+        }
+      },
+      "shared_prompt": {
+        "title": "Gemeinsame Geschäftsanweisungen",
+        "description": "Standardmässig aus. Der Text ergänzt neutrale Agent-Basisprompts und HA-Werkzeuginstruktionen; er ersetzt sie nicht exklusiv. Alle aktiven Agents müssen geprüft sein. Änderungen, Aktivierung und Deaktivierung erfordern neue Gespräche. Die Basisprompts werden ausschliesslich manuell in den vorhandenen Agent-Dialogen migriert.",
+        "data": {
+          "enabled": "Zentrale Zusätze aktivieren",
+          "text": "Gemeinsamer Prompt (mehrzeilig, wörtlicher Text)",
+          "acknowledge_additive": "Ich verstehe die additive Wirkung und die erforderlichen neuen Gespräche"
+        }
+      },
+      "agent_prompt": {
+        "title": "Agent für optionale Ergänzung wählen",
+        "data": {
+          "entity_id": "Agent"
+        }
+      },
+      "agent_prompt_text": {
+        "title": "Individuelle Ergänzung",
+        "description": "{agent}: Optionaler wörtlicher Zusatz nach dem gemeinsamen Text. Leer entfernt den Zusatz. Wirkt nur bei aktivierter zentraler Verwaltung. Änderungen an aktiven Agents erfordern neue Gespräche.",
+        "data": {
+          "text": "Ergänzung (optional, mehrzeilig)"
+        }
+      },
+      "prompt_review": {
+        "title": "Agent-Basisprompt und Implementierung prüfen",
+        "description": "Prüfung ist lesend. Zuerst den alten Prompt sichern, Geschäftsregeln in den Router übernehmen und den Basisprompt im vorhandenen Agent-Dialog durch die im nächsten Schritt gezeigte neutrale Vorlage ersetzen. Werkzeugauswahl beibehalten. Danach Agent-Reload abwarten. Unbekannte Quellversionen werden abgewiesen.",
+        "data": {
+          "entity_id": "Agent"
+        }
+      },
+      "prompt_review_confirm": {
+        "title": "Lesendes Prüfergebnis bestätigen",
+        "description": "Agent: {agent}\nIntegration: {domain}\nStatus: {status}\nKonfigurations-Fingerprint (SHA-256): {fingerprint}\nQuell-Fingerprints: {sources}\n\nNur ready kann bestätigt werden. Die neutrale Vorlage muss exakt im vorhandenen Agent-Dialog stehen. Enge Parameterfreigabe: reasoning_effort=none und konstantes enable_thinking=false beim geprüften llama.cpp-Mixin. Unbekannte oder dynamische Werte bleiben gesperrt. Alle Parameter bleiben im Fingerprint; Änderungen verlangen neue Prüfung. Bestätigung speichert nur einen Fingerprint im Router. Abschliessend Speichern wählen. Externe Werkzeugprompts und Backend-Vorlagen bleiben ausserhalb dieser Prüfung.",
+        "data": {
+          "neutral_baseline": "Neutrale Basisprompt-Vorlage (kopieren)",
+          "confirm": "Prüfergebnis und übrige Agent-/Werkzeugeinstellungen bewusst bestätigen"
+        }
+      }
+    },
+    "error": {
+      "invalid_agents": "Unterschiedliche Conversation-Entities auswählen. Der native HA-Agent und Router sind keine Ziele.",
+      "no_active_agents": "Mindestens ein konfigurierter Agent muss aktiviert bleiben.",
+      "invalid_position": "Vorhandenen Agent und eine gültige Position wählen.",
+      "invalid_health": "Unterstützte Verfügbarkeitsprüfung wählen.",
+      "invalid_url": "HTTP(S)-URL ohne URL-Zugangsdaten, Query oder Fragment verwenden.",
+      "invalid_auth": "Zugangsdaten prüfen: Bearer benötigt einen Token; Basic einen Benutzernamen ohne Doppelpunkt. Steuerzeichen sind nicht erlaubt.",
+      "invalid_model": "Exakten Modellschlüssel eingeben. Instanz-ID bei geladenen Modellen optional; für Nur vorhanden leer lassen.",
+      "invalid_budget": "Endliche Werte innerhalb der angezeigten Grenzen verwenden.",
+      "invalid_status": "Erwarteter HTTP-Status muss eine ganze Zahl von 200 bis 299 sein.",
+      "invalid_prompt": "Prompt muss Text mit höchstens 32768 Zeichen sein; aktiviert darf er nicht leer sein. Prüffingerprints müssen gültig sein.",
+      "acknowledge_additive": "Bitte die additive Wirkung und die Gesprächsgrenzen bestätigen.",
+      "prompt_review_required": "Alle aktiven Agents brauchen eine aktuelle kompatible Prompt-Prüfung. Agent auswählen und Status prüfen.",
+      "prompt_not_compatible": "Prüfung nicht kompatibel. Status prüfen; keinen Agent überschreiben oder umgehen.",
+      "prompt_changed": "Agent-Konfiguration hat sich seit Anzeige geändert. Neuen Fingerprint prüfen und nochmals bestätigen.",
+      "prompt_confirm_required": "Prüfergebnis bewusst bestätigen."
+    }
+  },
+  "selector": {
+    "check_kind": {
+      "options": {
+        "none": "Keine (nur HA-Entity)",
+        "http": "HTTP-Status",
+        "lm_studio": "LM Studio /api/v1/models"
+      }
+    },
+    "auth_type": {
+      "options": {
+        "none": "Keine",
+        "bearer": "Bearer-Token",
+        "basic": "HTTP Basic"
+      }
+    },
+    "model_state": {
+      "options": {
+        "loaded": "Geladen (empfohlen)",
+        "present": "Nur vorhanden (auch ungeladen)"
+      }
+    }
+  }
+}

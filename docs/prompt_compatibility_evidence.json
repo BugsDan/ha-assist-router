@@ -1,0 +1,66 @@
+{
+  "target_home_assistant": "2026.10.2",
+  "local_reference_repository": "https://github.com/skye-harris/hass_local_openai_llm",
+  "local_reference_tag": "1.13.0",
+  "local_reference_commit": "37b2334b2c5e5085a0c1081092fff238980e27ac",
+  "installed_local_version": "unknown; not inferred from entity ID",
+  "user_confirmed_local_integration": "skye-harris/hass_local_openai_llm; server type llama.cpp; LM Studio backend",
+  "live_provider_requests": false,
+  "sources": {
+    "prompt_compatibility/core/openai_conversation.py": {
+      "url": "https://raw.githubusercontent.com/home-assistant/core/2026.10.2/homeassistant/components/openai_conversation/conversation.py",
+      "sha256": "824c736e9e69e3d440bde2eeb8a7277f531cdeb0bc70ab6ca22423cd94ac085e"
+    },
+    "prompt_compatibility/core/openai_entity.py": {
+      "url": "https://raw.githubusercontent.com/home-assistant/core/2026.10.2/homeassistant/components/openai_conversation/entity.py",
+      "sha256": "3de8b947bb3892713967dd2dbbbeae72f1a27c4f62e73b381ccf3e6fcaab6ee9"
+    },
+    "prompt_compatibility/core/google_conversation.py": {
+      "url": "https://raw.githubusercontent.com/home-assistant/core/2026.10.2/homeassistant/components/google_generative_ai_conversation/conversation.py",
+      "sha256": "4cf92a0fc8d5b4f5e0cd25342d8f5ab0cc62a28494cfda63426f51871aee8bb6"
+    },
+    "prompt_compatibility/core/google_entity.py": {
+      "url": "https://raw.githubusercontent.com/home-assistant/core/2026.10.2/homeassistant/components/google_generative_ai_conversation/entity.py",
+      "sha256": "f077ad1afd601a07e515dd407fc3bd77399a22447357af17febb6b4d0bbc3322"
+    },
+    "prompt_compatibility/core/chat_log.py": {
+      "url": "https://raw.githubusercontent.com/home-assistant/core/2026.10.2/homeassistant/components/conversation/chat_log.py",
+      "sha256": "cbecafb79e129cb9f3632138931ca19acb027aec5887ae112013fbf62ec427ad"
+    },
+    "prompt_compatibility/core/template.py": {
+      "url": "https://raw.githubusercontent.com/home-assistant/core/2026.10.2/homeassistant/helpers/template/__init__.py",
+      "sha256": "cb26b93a52a25160072ac7a987f79cc8c26534abf5522461850e8ca30dfe4bd4"
+    },
+    "prompt_compatibility/local/conversation.py": {
+      "url": "https://raw.githubusercontent.com/skye-harris/hass_local_openai_llm/37b2334b2c5e5085a0c1081092fff238980e27ac/custom_components/local_openai/conversation.py",
+      "sha256": "37051cc4e35acb4348979ed1557c6aa2666c17cc94b6bb96633394ceda2179a1"
+    },
+    "prompt_compatibility/local/entity.py": {
+      "url": "https://raw.githubusercontent.com/skye-harris/hass_local_openai_llm/37b2334b2c5e5085a0c1081092fff238980e27ac/custom_components/local_openai/entity.py",
+      "sha256": "0d44047fb42563eba75ea1c6e4c3a2eaa694442d85e2f6bf164feaa832e32716"
+    },
+    "prompt_compatibility/local/const.py": {
+      "url": "https://raw.githubusercontent.com/skye-harris/hass_local_openai_llm/37b2334b2c5e5085a0c1081092fff238980e27ac/custom_components/local_openai/const.py",
+      "sha256": "5c488293692bce2046e2d271ac872790aed6e51add36cb2431a7bebdc957a98f"
+    },
+    "prompt_compatibility/local/config_flow.py": {
+      "url": "https://raw.githubusercontent.com/skye-harris/hass_local_openai_llm/37b2334b2c5e5085a0c1081092fff238980e27ac/custom_components/local_openai/config_flow.py",
+      "sha256": "2d5f4237932f23c45809db1c6cdbd6e174753af2efd965830961f807a3c61f8f"
+    },
+    "prompt_compatibility/local/llama_cpp.py": {
+      "url": "https://raw.githubusercontent.com/skye-harris/hass_local_openai_llm/37b2334b2c5e5085a0c1081092fff238980e27ac/custom_components/local_openai/entities/llama_cpp.py",
+      "sha256": "24a832fc116e49c0a671c2c4ce2165709abec2a6b0704b1bee0357b2261ed27b"
+    },
+    "prompt_compatibility/local/manifest.json": {
+      "url": "https://raw.githubusercontent.com/skye-harris/hass_local_openai_llm/37b2334b2c5e5085a0c1081092fff238980e27ac/custom_components/local_openai/manifest.json",
+      "sha256": "d24759ba04cd552d7140fcfb55e722248d9489247f7dcb3c9a9cf28ea7cdaef0"
+    },
+    "prompt_compatibility/local/LICENSE": {
+      "url": "https://raw.githubusercontent.com/skye-harris/hass_local_openai_llm/37b2334b2c5e5085a0c1081092fff238980e27ac/LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    }
+  },
+  "parameter_policy_1_2_1": "narrow constants only; raw parameters remain in full config fingerprints; native llama.cpp thinking override checked",
+  "local_reference_manifest_version": "1.12.1",
+  "conclusion": "extra_system_prompt is additive in all audited handlers; it does not replace the agent base prompt"
+}

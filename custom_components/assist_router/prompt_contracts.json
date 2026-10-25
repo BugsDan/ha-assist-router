@@ -1,0 +1,46 @@
+{
+  "ha_reference": "2026.10.2",
+  "chat_log_sha256": "cbecafb79e129cb9f3632138931ca19acb027aec5887ae112013fbf62ec427ad",
+  "local_reference_commit": "37b2334b2c5e5085a0c1081092fff238980e27ac",
+  "domains": {
+    "openai_conversation": {
+      "methods": {
+        "_async_handle_message": {
+          "homeassistant.components.openai_conversation.conversation": "824c736e9e69e3d440bde2eeb8a7277f531cdeb0bc70ab6ca22423cd94ac085e"
+        },
+        "_async_handle_chat_log": {
+          "homeassistant.components.openai_conversation.entity": "3de8b947bb3892713967dd2dbbbeae72f1a27c4f62e73b381ccf3e6fcaab6ee9"
+        }
+      }
+    },
+    "google_generative_ai_conversation": {
+      "methods": {
+        "_async_handle_message": {
+          "homeassistant.components.google_generative_ai_conversation.conversation": "4cf92a0fc8d5b4f5e0cd25342d8f5ab0cc62a28494cfda63426f51871aee8bb6"
+        },
+        "_async_handle_chat_log": {
+          "homeassistant.components.google_generative_ai_conversation.entity": "f077ad1afd601a07e515dd407fc3bd77399a22447357af17febb6b4d0bbc3322"
+        }
+      }
+    },
+    "local_openai": {
+      "methods": {
+        "_async_handle_message": {
+          "custom_components.local_openai.conversation": "37051cc4e35acb4348979ed1557c6aa2666c17cc94b6bb96633394ceda2179a1"
+        },
+        "_async_handle_chat_log": {
+          "custom_components.local_openai.entity": "0d44047fb42563eba75ea1c6e4c3a2eaa694442d85e2f6bf164feaa832e32716"
+        },
+        "_convert_content_to_chat_message": {
+          "custom_components.local_openai.entity": "0d44047fb42563eba75ea1c6e4c3a2eaa694442d85e2f6bf164feaa832e32716",
+          "custom_components.local_openai.entities.llama_cpp": "24a832fc116e49c0a671c2c4ce2165709abec2a6b0704b1bee0357b2261ed27b"
+        },
+        "_get_extra_body_args": {
+          "custom_components.local_openai.entity": "0d44047fb42563eba75ea1c6e4c3a2eaa694442d85e2f6bf164feaa832e32716",
+          "custom_components.local_openai.entities.llama_cpp": "24a832fc116e49c0a671c2c4ce2165709abec2a6b0704b1bee0357b2261ed27b"
+        }
+      },
+      "parameter_policy": "local_openai_v1"
+    }
+  }
+}

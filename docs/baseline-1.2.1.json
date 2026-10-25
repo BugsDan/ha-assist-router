@@ -1,0 +1,45 @@
+{
+  "version": "1.2.1",
+  "config_entry_version": 3,
+  "config_entry_minor_version": 1,
+  "component_sha256": {
+    "config_flow.py": "432867624152c5b16dd10b8de6450c266772521204617b81aa80668e624bb321",
+    "const.py": "7a8d8fb39764a3584634d272534ad15b960ffcc430a1d57a577cc9abb1949e20",
+    "conversation.py": "fc0435b5265902e581342a48891ccd61be5f30b4e6a315007a6ebda8dcfbf5cf",
+    "diagnostics.py": "9b5a879387cb9008ecb2a5a84fbb80f8d9f99ff7dd84bb51e12fc52c6b5c67e7",
+    "health.py": "13dbaef4907fd124d709ad48cd677495fdd707146fbbc78830f0152202432884",
+    "health_types.py": "81b89f3def3666e9d3e7a74069a3d0b0f25f4e82ebabec548dd19d665f852b0b",
+    "local_parameters.py": "77bebe063f201322fa2bc7d10b76c0107bdb38f32441ab6c3399944465c20a7b",
+    "manifest.json": "0466138b90062f3565337d94d9d22d2ba17dfa7c2242aaf83c19b7592509bdd8",
+    "migration.py": "50eb750ef45ef9907ff87dad557c1437d037c3c49c443f502f2675acdf16630c",
+    "prompts.py": "7b665770a5f5fb02b71917dd3e123ec7b4b0dc434e64ea2ddc97e030c3781ab0",
+    "prompt_contracts.json": "ce7dd17596a1f898a49b6bc9ac3776b5a0dee68ecb849bc1d7ac257fe8808aea",
+    "runtime.py": "1b9275aea58b7770f3831811e7fbbe8b6080767251c881522b0cb778b8fa8b9e",
+    "settings.py": "d72b80f02d7b41294ac7cfe0c7c6a7611d80772af7e42252001c33b9e65e3f70",
+    "strings.json": "3f71e5e40e298213d4e256b5d12e091eed5a6bd80b3a9a8f2f495194373fe1c2",
+    "__init__.py": "300bfb9e014b54860a04e01dbb055d5d1502030b5620d93e31b4aaffa5cecb94",
+    "translations/de.json": "817cd83a1bf1314fec08816b8c2a96fbef5b0126f23b75dff1f9c07e714a1840",
+    "translations/en.json": "3f71e5e40e298213d4e256b5d12e091eed5a6bd80b3a9a8f2f495194373fe1c2"
+  },
+  "manifest_before": {
+    "domain": "assist_router",
+    "name": "Assist Router",
+    "version": "1.2.1",
+    "config_flow": true,
+    "dependencies": [
+      "conversation"
+    ],
+    "codeowners": [],
+    "integration_type": "service",
+    "iot_class": "local_polling",
+    "requirements": []
+  },
+  "approved_cleanup": {
+    "migration.py": {
+      "original_sha256": "50eb750ef45ef9907ff87dad557c1437d037c3c49c443f502f2675acdf16630c",
+      "approved_sha256": "6eede6e9ac4a76618727e9ab34b599f7087b9b7014613cd8a6124724763078e0",
+      "reason": "Remove implicit private legacy destination; require explicit valid stored models_url; fail atomically otherwise. No other migration behavior changes.",
+      "ast_without_default_sha256": "31f4dcd85528690620338322201146d5e248e42d2aaea0874ed6520c8ef8f1cb"
+    }
+  }
+}

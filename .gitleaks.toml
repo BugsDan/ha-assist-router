@@ -1,0 +1,3 @@
+title = "Assist Router publication secrets"
+[extend]
+useDefault = true

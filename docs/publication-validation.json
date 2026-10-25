@@ -1,0 +1,61 @@
+{
+  "date": "2026-10-25",
+  "target_repository": "BugsDan/ha-assist-router",
+  "publication": "local only; no GitHub repository/commit/tag/release/Brands PR created",
+  "version": "1.2.1",
+  "baseline": "15 original functional component files byte-identical; sole migration.py change removes URL fallback; manifest metadata only",
+  "manifest_changes": [
+    "codeowners",
+    "documentation",
+    "issue_tracker"
+  ],
+  "functional_code_changes": {
+    "sole_approved_change": "legacy v1 migration no longer supplies an implicit destination; stored valid models_url required",
+    "other_runtime_files_changed": false,
+    "original_migration_ast_with_default_removed_matches_cleaned_ast": true
+  },
+  "config_entry_schema": "3.1 unchanged",
+  "tests": {
+    "tests": 241,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 1,
+    "passed": 240,
+    "seconds": 31.059
+  },
+  "secret_scan": {
+    "gitleaks_version": "v8.30.1",
+    "default_rules": true,
+    "findings": 0,
+    "scope": "all curated publication files; no local git history exists",
+    "local_hygiene_findings": 0,
+    "upstream_download_checksum_verified": true,
+    "local_private_endpoint_rule": true
+  },
+  "actions": {
+    "tests": "prepared",
+    "real_home_assistant": "prepared; Linux/Python >=3.14.2 not run locally",
+    "hacs": "prepared; not run remotely",
+    "hassfest": "prepared; Docker unavailable locally; not run remotely",
+    "secret_history_scan": "prepared; to run on later GitHub history",
+    "permissions": "contents:read; no publish workflow",
+    "official_validation": "HACS/hassfest and actual Linux HA not executed locally; prepared read-only GitHub workflows remain required"
+  },
+  "branding": "original SVG + transparent RGBA 256/512 PNG, light/dark, locally embedded; visually inspected",
+  "license": "MIT original code/tooling/artwork; upstream Apache-2.0 reference licenses retained",
+  "sources": [
+    "https://www.hacs.xyz/docs/publish/integration/",
+    "https://www.hacs.xyz/docs/publish/start/",
+    "https://www.hacs.xyz/docs/faq/existing_elements/",
+    "https://contributors.home-assistant.io/core/integrations/brands/",
+    "https://github.com/BugsDan/ha-yuvomi-mcp"
+  ],
+  "resolved_review_item": "Historical private URL removed from public source. Explicit stored URLs retained exactly; absent/invalid legacy URL rejects migration atomically. No guessed destination or disabled check.",
+  "compatibility": {
+    "schema3_1": "unchanged; migration does not update entry data/options",
+    "prompt_and_fingerprints": "raw options, fingerprint and revision equality tested",
+    "schema2": "order, enabled flags and canonical health objects preserved; shared additions remain off by default",
+    "schema1": "valid stored URL and credentials/time budgets preserved; options precedence retained; missing/invalid URL stops without mutation",
+    "version": "1.2.1 unchanged"
+  }
+}
