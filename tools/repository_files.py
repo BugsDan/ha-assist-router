@@ -13,6 +13,7 @@ TOP_FILES = {
     "hacs.json",
     "pyproject.toml",
     "requirements-test.txt",
+    "requirements-test-ha.txt",
     ".gitignore",
     ".gitattributes",
     ".gitleaks.toml",

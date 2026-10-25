@@ -1,7 +1,10 @@
 """Repository checks; sole approved runtime delta is legacy URL cleanup."""
 
+import hashlib
 import importlib.util
+import io
 import json
+import shutil
 import sys
 from pathlib import Path
 from xml.etree import ElementTree
@@ -79,3 +82,58 @@ def test_hacs_layout_and_local_icons_match_documented_versions():
 
 def test_repository_metadata_and_hygiene_pass():
     assert tool("check_repository").validate(tag="v1.2.1") == []
+
+
+def test_generated_json_is_reproducible_utf8_lf(monkeypatch, tmp_path):
+    api = tool("check_ha_api")
+    prompts = tool("check_prompt_compatibility")
+    contracts = tool("generate_prompt_contracts")
+    downloads = {api.BASE + name: (ROOT / "reference" / name).read_bytes() for name in api.PATHS}
+    downloads.update(
+        {
+            url: (ROOT / "reference/prompt_compatibility" / name).read_bytes()
+            for name, url in prompts.SOURCES.items()
+        }
+    )
+    for module in (api, prompts, contracts):
+        monkeypatch.setattr(module, "ROOT", tmp_path)
+    for module in (api, prompts):
+        monkeypatch.setattr(module, "urlopen", lambda url, timeout: io.BytesIO(downloads[url]))
+    original_write = Path.write_text
+
+    def write_json(path, text, **kwargs):
+        assert kwargs["encoding"] == "utf-8" and kwargs["newline"] == "\n"
+        return original_write(path, text, **kwargs)
+
+    monkeypatch.setattr(Path, "write_text", write_json)
+    names = (
+        "docs/ha_api_evidence.json",
+        "docs/prompt_compatibility_evidence.json",
+        "custom_components/assist_router/prompt_contracts.json",
+    )
+    (tmp_path / "custom_components/assist_router").mkdir(parents=True)
+    for _ in range(2):
+        for module in (api, prompts, contracts):
+            module.main()
+        for name in names:
+            data = (tmp_path / name).read_bytes()
+            assert data == (ROOT / name).read_bytes()
+            assert b"\r" not in data and data.endswith(b"\n")
+            json.loads(data.decode("utf-8"))
+        for path in (tmp_path / "reference").rglob("*"):
+            if path.is_file():
+                assert path.read_bytes() == (ROOT / path.relative_to(tmp_path)).read_bytes()
+
+
+def test_contract_normalization_cannot_hide_content_changes(tmp_path):
+    shutil.copytree(ROOT / "custom_components", tmp_path / "custom_components")
+    (tmp_path / "docs").mkdir()
+    baseline = json.loads((ROOT / "docs/baseline-1.2.1.json").read_text())
+    contracts = tmp_path / "custom_components/assist_router/prompt_contracts.json"
+    contracts.write_bytes(contracts.read_bytes().replace(b"2026.10.2", b"2026.10.3"))
+    # Even updating the current hash cannot conceal a change from the historical bytes.
+    baseline["component_sha256"]["prompt_contracts.json"] = hashlib.sha256(contracts.read_bytes()).hexdigest()
+    (tmp_path / "docs/baseline-1.2.1.json").write_text(json.dumps(baseline))
+    assert tool("check_repository").baseline_errors(tmp_path) == [
+        "Generated contracts differ from original beyond LF normalization"
+    ]

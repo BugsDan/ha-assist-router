@@ -13,7 +13,7 @@
     "manifest.json": "0466138b90062f3565337d94d9d22d2ba17dfa7c2242aaf83c19b7592509bdd8",
     "migration.py": "50eb750ef45ef9907ff87dad557c1437d037c3c49c443f502f2675acdf16630c",
     "prompts.py": "7b665770a5f5fb02b71917dd3e123ec7b4b0dc434e64ea2ddc97e030c3781ab0",
-    "prompt_contracts.json": "ce7dd17596a1f898a49b6bc9ac3776b5a0dee68ecb849bc1d7ac257fe8808aea",
+    "prompt_contracts.json": "425d58cc332ebe41564e314512f8c2e107f5bb9028fe05bc4cb2514af94e43e5",
     "runtime.py": "1b9275aea58b7770f3831811e7fbbe8b6080767251c881522b0cb778b8fa8b9e",
     "settings.py": "d72b80f02d7b41294ac7cfe0c7c6a7611d80772af7e42252001c33b9e65e3f70",
     "strings.json": "3f71e5e40e298213d4e256b5d12e091eed5a6bd80b3a9a8f2f495194373fe1c2",
@@ -41,5 +41,6 @@
       "reason": "Remove implicit private legacy destination; require explicit valid stored models_url; fail atomically otherwise. No other migration behavior changes.",
       "ast_without_default_sha256": "31f4dcd85528690620338322201146d5e248e42d2aaea0874ed6520c8ef8f1cb"
     }
-  }
+  },
+  "prompt_contracts_crlf_sha256": "ce7dd17596a1f898a49b6bc9ac3776b5a0dee68ecb849bc1d7ac257fe8808aea"
 }

@@ -19,7 +19,7 @@ python tools/secret_scan.py
 python tools/build_release.py
 ```
 
-Python 3.12 reicht für Quellenvertrag-/Host-Tests. Echte HA-Laufzeittests benötigen Linux und Python >=3.14.2 mit homeassistant==2026.10.2. Ein lokaler Skip ist keine bestandene HA-Abnahme. Die Versions-/HACS-/hassfest-Prüfungen müssen später zusätzlich auf GitHub grün sein.
+Python 3.12 reicht für Quellenvertrag-/Host-Tests. Echte HA-Laufzeittests benötigen Linux und Python >=3.14.2: `python -m pip install -r requirements-test-ha.txt` installiert HA 2026.10.2 sowie dessen zusätzliche Conversation-Anforderungen vor dem Import. Ein lokaler Skip ist keine bestandene HA-Abnahme. Die Versions-/HACS-/hassfest-Prüfungen müssen zusätzlich auf GitHub grün sein. Details zur reproduzierbaren Generierung: [CI_VALIDIERUNG.md](docs/CI_VALIDIERUNG.md).
 
 Die Originalgrafik wird mit `python tools/generate_brand.py` reproduziert; Pillow ist nur Entwicklungsabhängigkeit. SVG-Quellen unter assets/, PNGs unter custom_components/assist_router/brand/. Keine HA-Markenbestandteile übernehmen.
 

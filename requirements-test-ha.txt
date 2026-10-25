@@ -1,0 +1,8 @@
+# HA installs integration requirements during setup, but the import guard runs first.
+# Exact additional requirements from HA 2026.10.2 conversation/manifest.json.
+homeassistant==2026.10.2
+gazetteer-matcher==1.1.0
+hassil==3.12.1
+home-assistant-intents==2026.10.6
+pytest==9.1.1
+pytest-asyncio==1.4.0

@@ -104,7 +104,7 @@ def main():
         "extra_system_prompt is additive in all audited handlers; it does not replace the agent base prompt"
     )
     destination = ROOT / "docs/prompt_compatibility_evidence.json"
-    destination.write_text(json.dumps(evidence, indent=2) + "\n", encoding="utf-8")
+    destination.write_text(json.dumps(evidence, indent=2) + "\n", encoding="utf-8", newline="\n")
     print("Audited core and pinned Local OpenAI reference: additive, not exclusive replacement.")
     print("Installed Local OpenAI identity/version remains unverified.")
 

@@ -52,7 +52,7 @@ def main():
         "domains": domains,
     }
     target = ROOT / "custom_components/assist_router/prompt_contracts.json"
-    target.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+    target.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8", newline="\n")
     print("Generated audited source allowlist (no provider source installed).")
 
 

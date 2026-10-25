@@ -3,6 +3,9 @@
 No SDKs, provider credentials or production HA instance are used.
 """
 
+import json
+from importlib.metadata import version
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
@@ -21,6 +24,13 @@ from custom_components.assist_router.health import Health
 from custom_components.assist_router.prompts import PromptManager, PromptSnapshot
 from custom_components.assist_router.runtime import Ledger, Runtime
 from custom_components.assist_router.settings import Settings
+
+
+def test_real_core_conversation_requirements_are_explicit():
+    assert version("homeassistant") == "2026.10.2"
+    manifest = json.loads(Path(conversation.__file__).with_name("manifest.json").read_text())
+    requirements = (Path(__file__).resolve().parents[1] / "requirements-test-ha.txt").read_text()
+    assert set(manifest["requirements"]) <= set(requirements.splitlines())
 
 
 @pytest.mark.ha

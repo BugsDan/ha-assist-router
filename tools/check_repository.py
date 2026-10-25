@@ -15,6 +15,15 @@ def baseline_errors(root=ROOT):
     baseline = json.loads((root / "docs/baseline-1.2.1.json").read_text(encoding="utf-8"))
     component = root / "custom_components/assist_router"
     errors = []
+    # Only the generated JSON moved from CRLF to LF. Reconstruct the old bytes
+    # and verify their original hash as well as the current byte-level baseline.
+    contracts = (component / "prompt_contracts.json").read_bytes()
+    if (
+        b"\r" in contracts
+        or hashlib.sha256(contracts.replace(b"\n", b"\r\n")).hexdigest()
+        != baseline["prompt_contracts_crlf_sha256"]
+    ):
+        errors.append("Generated contracts differ from original beyond LF normalization")
     cleanup = baseline.get("approved_cleanup", {})
     if set(cleanup) != {"migration.py"}:
         errors.append("Only the reviewed migration URL cleanup is allowed")

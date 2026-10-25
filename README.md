@@ -145,7 +145,7 @@ python tools/build_release.py
 Separate echte HA-Laufzeittests unter Linux mit Python 3.14.2 oder neuer:
 
 ```sh
-python -m pip install homeassistant==2026.10.2
+python -m pip install -r requirements-test-ha.txt
 python -m pytest tests_live -q
 ```
 

@@ -82,7 +82,9 @@ def main():
         evidence["sources"][path] = {"url": BASE + path, "sha256": hashlib.sha256(data).hexdigest()}
     verify(sources)
     (ROOT / "docs").mkdir(exist_ok=True)
-    (ROOT / "docs/ha_api_evidence.json").write_text(json.dumps(evidence, indent=2) + "\n", encoding="utf-8")
+    (ROOT / "docs/ha_api_evidence.json").write_text(
+        json.dumps(evidence, indent=2) + "\n", encoding="utf-8", newline="\n"
+    )
     print("Pinned HA 2026.10.2 API contracts verified; source hashes saved.")
 
 
