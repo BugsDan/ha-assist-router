@@ -266,7 +266,7 @@ async def test_v1_migration_merges_options_and_preserves_health(ha):
     )
     assert await module.async_migrate_entry(ha.hass, entry)
     args = ha.hass.config_entries.async_update_entry.call_args.kwargs
-    assert args["version"] == 3 and args["data"] == {} and args["minor_version"] == 1
+    assert args["version"] == 3 and args["data"] == {} and args["minor_version"] == 2
     routes = args["options"]["agents"]
     assert routes[0]["entity_id"] == "conversation.custom"
     assert routes[0]["health"]["model_key"] == "new-model"
@@ -281,7 +281,7 @@ async def test_migration_rejects_invalid_or_future_config_without_mutation(ha):
     ha.hass.config_entries = SimpleNamespace(async_update_entry=update)
     assert not await module.async_migrate_entry(ha.hass, SimpleNamespace(version=1, data={}, options={}))
     assert not await module.async_migrate_entry(ha.hass, SimpleNamespace(version=4))
-    assert await module.async_migrate_entry(ha.hass, SimpleNamespace(version=3))
+    assert await module.async_migrate_entry(ha.hass, SimpleNamespace(version=3, minor_version=2))
     update.assert_not_called()
 
 

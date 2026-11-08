@@ -321,6 +321,7 @@ async def test_ui_opt_in_requires_review_and_never_migrates_targets(ha, monkeypa
 
     _, flow = new_flow(ha, monkeypatch)
     await flow.async_step_user({"agent_order": ["conversation.a", "conversation.b"]})
+    await flow.async_step_security_mode({"mode": "strict"})
     result = await flow.async_step_shared_prompt({"enabled": True, "text": TEXT})
     assert result["errors"]["base"] == "acknowledge_additive"
     values = result["data_schema"]({"enabled": True, "text": TEXT, "acknowledge_additive": True})

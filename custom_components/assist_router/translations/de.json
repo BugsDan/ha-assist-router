@@ -11,7 +11,7 @@
       },
       "manage": {
         "title": "Assist Router konfigurieren",
-        "description": "Aktuelle Reihenfolge (✓ aktiviert, – deaktiviert):\n{agents}\n\nÄnderungen werden erst mit Speichern übernommen.",
+        "description": "Aktuelle Reihenfolge (✓ aktiviert, – deaktiviert):\n{agents}\n\nÄnderungen werden erst mit Speichern übernommen.\n\nSicherheitsmodus: {mode}. Bestehende 1.2.1-Einträge bleiben nach Migration in Strict.",
         "menu_options": {
           "order": "Agents auswählen, sortieren oder entfernen",
           "position": "Position eines Agents ändern",
@@ -20,7 +20,8 @@
           "finish": "Speichern",
           "shared_prompt": "Gemeinsamen Prompt bearbeiten",
           "agent_prompt": "Individuelle Agent-Ergänzung bearbeiten",
-          "prompt_review": "Agent-Basisprompt prüfen und freigeben"
+          "prompt_review": "Agent-Basisprompt prüfen und freigeben",
+          "security_mode": "Sicherheitsmodus wählen"
         }
       },
       "position": {
@@ -93,17 +94,25 @@
       },
       "prompt_review": {
         "title": "Agent-Basisprompt und Implementierung prüfen",
-        "description": "Prüfung ist lesend. Zuerst den alten Prompt sichern, Geschäftsregeln in den Router übernehmen und den Basisprompt im vorhandenen Agent-Dialog durch die im nächsten Schritt gezeigte neutrale Vorlage ersetzen. Werkzeugauswahl beibehalten. Danach Agent-Reload abwarten. Unbekannte Quellversionen werden abgewiesen.",
+        "description": "Lesende Prüfung im gewählten Modus. Basisprompt im bestehenden Agent-Dialog neutralisieren; Werkzeugauswahl bleibt dort. Standard bestätigt Identität und Backend-Vertrauensbereich, Strict zusätzlich Quellen und Konfiguration.",
         "data": {
           "entity_id": "Agent"
         }
       },
       "prompt_review_confirm": {
         "title": "Lesendes Prüfergebnis bestätigen",
-        "description": "Agent: {agent}\nIntegration: {domain}\nStatus: {status}\nKonfigurations-Fingerprint (SHA-256): {fingerprint}\nQuell-Fingerprints: {sources}\n\nNur ready kann bestätigt werden. Die neutrale Vorlage muss exakt im vorhandenen Agent-Dialog stehen. Enge Parameterfreigabe: reasoning_effort=none und konstantes enable_thinking=false beim geprüften llama.cpp-Mixin. Unbekannte oder dynamische Werte bleiben gesperrt. Alle Parameter bleiben im Fingerprint; Änderungen verlangen neue Prüfung. Bestätigung speichert nur einen Fingerprint im Router. Abschliessend Speichern wählen. Externe Werkzeugprompts und Backend-Vorlagen bleiben ausserhalb dieser Prüfung.",
+        "description": "Agent: {agent}\nIntegration: {domain}\nModus: {mode}\nKonfiguriertes Modell (soweit bekannt): {model}\nStatus: {status}\nWarnungen: {warnings}\nFreigabe-Fingerprint: {fingerprint}\nQuell-Fingerprints (nur Strict): {sources}\n\nNur ready lässt sich bestätigen. Standard speichert eine dauerhafte Freigabe für Identität und Backend; Modell, Modellparameter und Integrationsversion sind davon unabhängig. Ein Backend-Wechsel verlangt erneute Bestätigung. Strict behält die vollständige Fingerprint-Prüfung. Fremde Werkzeuginstruktionen und Backend-Templates sind keine exklusiv kontrollierten Prompts. Erst Speichern übernimmt den Entwurf.",
         "data": {
           "neutral_baseline": "Neutrale Basisprompt-Vorlage (kopieren)",
           "confirm": "Prüfergebnis und übrige Agent-/Werkzeugeinstellungen bewusst bestätigen"
+        }
+      },
+      "security_mode": {
+        "title": "Sicherheitsmodus",
+        "description": "Standard vertraut einmalig dem Agenten und Backend. Modellwechsel und normale Integrationsupdates erfordern keine neue Freigabe. Strict prüft zusätzlich exakte Quellen und die gesamte Konfiguration. Der Wechsel von Strict zu Standard verlangt eine bewusste Bestätigung. Änderungen bei aktivem Zusatzprompt erfordern neue Gespräche.",
+        "data": {
+          "mode": "Modus",
+          "confirm_standard": "Ich bestätige den Wechsel zu Standard ohne exakte Quellprüfung"
         }
       }
     },
@@ -121,8 +130,9 @@
       "acknowledge_additive": "Bitte die additive Wirkung und die Gesprächsgrenzen bestätigen.",
       "prompt_review_required": "Alle aktiven Agents brauchen eine aktuelle kompatible Prompt-Prüfung. Agent auswählen und Status prüfen.",
       "prompt_not_compatible": "Prüfung nicht kompatibel. Status prüfen; keinen Agent überschreiben oder umgehen.",
-      "prompt_changed": "Agent-Konfiguration hat sich seit Anzeige geändert. Neuen Fingerprint prüfen und nochmals bestätigen.",
-      "prompt_confirm_required": "Prüfergebnis bewusst bestätigen."
+      "prompt_changed": "Die Freigabegrundlage hat sich geändert. Neue Prüfung anzeigen und erneut bestätigen.",
+      "prompt_confirm_required": "Prüfergebnis bewusst bestätigen.",
+      "confirm_standard_required": "Den Wechsel von Strict zu Standard ausdrücklich bestätigen."
     },
     "abort": {
       "single_instance_allowed": "Es wird nur ein Assist-Router-Eintrag unterstützt."
@@ -139,7 +149,7 @@
       },
       "manage": {
         "title": "Assist Router konfigurieren",
-        "description": "Aktuelle Reihenfolge (✓ aktiviert, – deaktiviert):\n{agents}\n\nÄnderungen werden erst mit Speichern übernommen.",
+        "description": "Aktuelle Reihenfolge (✓ aktiviert, – deaktiviert):\n{agents}\n\nÄnderungen werden erst mit Speichern übernommen.\n\nSicherheitsmodus: {mode}. Bestehende 1.2.1-Einträge bleiben nach Migration in Strict.",
         "menu_options": {
           "order": "Agents auswählen, sortieren oder entfernen",
           "position": "Position eines Agents ändern",
@@ -148,7 +158,8 @@
           "finish": "Speichern",
           "shared_prompt": "Gemeinsamen Prompt bearbeiten",
           "agent_prompt": "Individuelle Agent-Ergänzung bearbeiten",
-          "prompt_review": "Agent-Basisprompt prüfen und freigeben"
+          "prompt_review": "Agent-Basisprompt prüfen und freigeben",
+          "security_mode": "Sicherheitsmodus wählen"
         }
       },
       "position": {
@@ -221,17 +232,25 @@
       },
       "prompt_review": {
         "title": "Agent-Basisprompt und Implementierung prüfen",
-        "description": "Prüfung ist lesend. Zuerst den alten Prompt sichern, Geschäftsregeln in den Router übernehmen und den Basisprompt im vorhandenen Agent-Dialog durch die im nächsten Schritt gezeigte neutrale Vorlage ersetzen. Werkzeugauswahl beibehalten. Danach Agent-Reload abwarten. Unbekannte Quellversionen werden abgewiesen.",
+        "description": "Lesende Prüfung im gewählten Modus. Basisprompt im bestehenden Agent-Dialog neutralisieren; Werkzeugauswahl bleibt dort. Standard bestätigt Identität und Backend-Vertrauensbereich, Strict zusätzlich Quellen und Konfiguration.",
         "data": {
           "entity_id": "Agent"
         }
       },
       "prompt_review_confirm": {
         "title": "Lesendes Prüfergebnis bestätigen",
-        "description": "Agent: {agent}\nIntegration: {domain}\nStatus: {status}\nKonfigurations-Fingerprint (SHA-256): {fingerprint}\nQuell-Fingerprints: {sources}\n\nNur ready kann bestätigt werden. Die neutrale Vorlage muss exakt im vorhandenen Agent-Dialog stehen. Enge Parameterfreigabe: reasoning_effort=none und konstantes enable_thinking=false beim geprüften llama.cpp-Mixin. Unbekannte oder dynamische Werte bleiben gesperrt. Alle Parameter bleiben im Fingerprint; Änderungen verlangen neue Prüfung. Bestätigung speichert nur einen Fingerprint im Router. Abschliessend Speichern wählen. Externe Werkzeugprompts und Backend-Vorlagen bleiben ausserhalb dieser Prüfung.",
+        "description": "Agent: {agent}\nIntegration: {domain}\nModus: {mode}\nKonfiguriertes Modell (soweit bekannt): {model}\nStatus: {status}\nWarnungen: {warnings}\nFreigabe-Fingerprint: {fingerprint}\nQuell-Fingerprints (nur Strict): {sources}\n\nNur ready lässt sich bestätigen. Standard speichert eine dauerhafte Freigabe für Identität und Backend; Modell, Modellparameter und Integrationsversion sind davon unabhängig. Ein Backend-Wechsel verlangt erneute Bestätigung. Strict behält die vollständige Fingerprint-Prüfung. Fremde Werkzeuginstruktionen und Backend-Templates sind keine exklusiv kontrollierten Prompts. Erst Speichern übernimmt den Entwurf.",
         "data": {
           "neutral_baseline": "Neutrale Basisprompt-Vorlage (kopieren)",
           "confirm": "Prüfergebnis und übrige Agent-/Werkzeugeinstellungen bewusst bestätigen"
+        }
+      },
+      "security_mode": {
+        "title": "Sicherheitsmodus",
+        "description": "Standard vertraut einmalig dem Agenten und Backend. Modellwechsel und normale Integrationsupdates erfordern keine neue Freigabe. Strict prüft zusätzlich exakte Quellen und die gesamte Konfiguration. Der Wechsel von Strict zu Standard verlangt eine bewusste Bestätigung. Änderungen bei aktivem Zusatzprompt erfordern neue Gespräche.",
+        "data": {
+          "mode": "Modus",
+          "confirm_standard": "Ich bestätige den Wechsel zu Standard ohne exakte Quellprüfung"
         }
       }
     },
@@ -249,8 +268,9 @@
       "acknowledge_additive": "Bitte die additive Wirkung und die Gesprächsgrenzen bestätigen.",
       "prompt_review_required": "Alle aktiven Agents brauchen eine aktuelle kompatible Prompt-Prüfung. Agent auswählen und Status prüfen.",
       "prompt_not_compatible": "Prüfung nicht kompatibel. Status prüfen; keinen Agent überschreiben oder umgehen.",
-      "prompt_changed": "Agent-Konfiguration hat sich seit Anzeige geändert. Neuen Fingerprint prüfen und nochmals bestätigen.",
-      "prompt_confirm_required": "Prüfergebnis bewusst bestätigen."
+      "prompt_changed": "Die Freigabegrundlage hat sich geändert. Neue Prüfung anzeigen und erneut bestätigen.",
+      "prompt_confirm_required": "Prüfergebnis bewusst bestätigen.",
+      "confirm_standard_required": "Den Wechsel von Strict zu Standard ausdrücklich bestätigen."
     }
   },
   "selector": {
@@ -272,6 +292,12 @@
       "options": {
         "loaded": "Geladen (empfohlen)",
         "present": "Nur vorhanden (auch ungeladen)"
+      }
+    },
+    "security_mode": {
+      "options": {
+        "standard": "Standard",
+        "strict": "Strict"
       }
     }
   }

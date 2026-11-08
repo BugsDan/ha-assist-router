@@ -1,4 +1,4 @@
-"""Version/HACS baseline with the sole approved legacy-URL cleanup and scan."""
+"""Development version/HACS checks and frozen Strict-source and HTTP baselines."""
 
 import argparse
 import ast
@@ -15,6 +15,26 @@ def baseline_errors(root=ROOT):
     baseline = json.loads((root / "docs/baseline-1.2.1.json").read_text(encoding="utf-8"))
     component = root / "custom_components/assist_router"
     errors = []
+    after = json.loads((component / "manifest.json").read_text(encoding="utf-8"))
+    # 1.3 deliberately changes trust policy and UI, while pinned Strict source
+    # contracts and the untouched HTTP/migration helpers remain byte-guarded.
+    policy_delta = (
+        {
+            "__init__.py",
+            "config_flow.py",
+            "settings.py",
+            "prompts.py",
+            "local_parameters.py",
+            "diagnostics.py",
+            "runtime.py",
+            "conversation.py",
+            "strings.json",
+            "translations/de.json",
+            "translations/en.json",
+        }
+        if after["version"] == "1.3.0"
+        else set()
+    )
     # Only the generated JSON moved from CRLF to LF. Reconstruct the old bytes
     # and verify their original hash as well as the current byte-level baseline.
     contracts = (component / "prompt_contracts.json").read_bytes()
@@ -28,7 +48,7 @@ def baseline_errors(root=ROOT):
     if set(cleanup) != {"migration.py"}:
         errors.append("Only the reviewed migration URL cleanup is allowed")
     for relative, digest in baseline["component_sha256"].items():
-        if relative == "manifest.json":
+        if relative == "manifest.json" or relative in policy_delta:
             continue
         if relative in cleanup:
             if cleanup[relative]["original_sha256"] != digest:
@@ -44,6 +64,8 @@ def baseline_errors(root=ROOT):
     before = baseline["manifest_before"]
     after = json.loads((component / "manifest.json").read_text(encoding="utf-8"))
     cosmetic = {"codeowners", "documentation", "issue_tracker"}
+    if after["version"] == "1.3.0":
+        cosmetic.add("version")
     if {k: v for k, v in before.items() if k not in cosmetic} != {
         k: v for k, v in after.items() if k not in cosmetic
     }:
@@ -66,10 +88,10 @@ def validate(root=ROOT, tag=None):
     hacs = json.loads((root / "hacs.json").read_text(encoding="utf-8"))
     project = tomllib.loads((root / "pyproject.toml").read_text(encoding="utf-8"))
     base = "https://github.com/BugsDan/ha-assist-router"
-    if manifest["version"] != "1.2.1" or project["project"]["version"] != manifest["version"]:
-        errors.append("Public baseline must remain 1.2.1")
-    if tag is not None and tag != "v1.2.1":
-        errors.append("Expected baseline tag v1.2.1")
+    if manifest["version"] != "1.3.0" or project["project"]["version"] != manifest["version"]:
+        errors.append("Development version must be 1.3.0")
+    if tag is not None and tag != "v1.3.0":
+        errors.append("Expected development tag v1.3.0")
     if manifest["domain"] != "assist_router" or manifest["codeowners"] != ["@BugsDan"]:
         errors.append("Domain/owner mismatch")
     if manifest.get("documentation") != base or manifest.get("issue_tracker") != base + "/issues":
@@ -119,5 +141,5 @@ if __name__ == "__main__":
     errors = validate(tag=args.tag)
     for error in errors:
         print(error)
-    print(f"Repository review: {len(errors)} findings; runtime baseline 1.2.1.")
+    print(f"Repository review: {len(errors)} findings; development 1.3.0, pinned Strict contracts unchanged.")
     raise SystemExit(bool(errors))

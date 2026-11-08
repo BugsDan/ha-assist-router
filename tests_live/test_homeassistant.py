@@ -37,7 +37,8 @@ def test_real_core_conversation_requirements_are_explicit():
 @pytest.mark.ha
 @pytest.mark.parametrize("fail", [False, True])
 @pytest.mark.parametrize("shared", [False, True])
-async def test_real_core_entity_chatlog_followup_and_failure(tmp_path, fail, shared):
+@pytest.mark.parametrize("mode", ["strict", "standard"])
+async def test_real_core_entity_chatlog_followup_and_failure(tmp_path, fail, shared, mode):
     hass = HomeAssistant(str(tmp_path))
     calls = []
 
@@ -92,6 +93,8 @@ async def test_real_core_entity_chatlog_followup_and_failure(tmp_path, fail, sha
                 "agents": [{"entity_id": leaf.entity_id, "enabled": True, "health": None}],
                 "prompt": {
                     "enabled": shared,
+                    "mode": mode,
+                    "approvals": {leaf.entity_id: "a" * 64},
                     "text": "Gemeinsam: Café e\u0301\nö ü",
                     "reviews": {leaf.entity_id: "a" * 64},
                 },

@@ -20,7 +20,9 @@ async def async_setup_entry(hass, entry):
     ledger = ledgers.setdefault(entry.entry_id, Ledger())
     entry.runtime_data = Runtime(settings, HealthChecks(async_get_clientsession(hass), settings), ledger)
     if settings.prompt.enabled:
-        entry.runtime_data.prompts = PromptManager(settings, await async_make_inspector(hass))
+        entry.runtime_data.prompts = PromptManager(
+            settings, await async_make_inspector(hass, settings.prompt.mode)
+        )
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(_async_options_updated))
     return True
@@ -43,13 +45,19 @@ async def async_migrate_entry(hass, entry):
     """Migrate atomically; legacy options override data exactly as in 1.0."""
     if entry.version > 3:
         return False
-    if entry.version < 3:
+    if entry.version < 3 or getattr(entry, "minor_version", 1) < 2:
         try:
             config = {**entry.data, **entry.options}
+            # Existing installations keep their exact Strict reviews. Never grant
+            # Standard trust from an old fingerprint or downgrade on upgrade.
             if entry.version == 1:
                 config = migrate_v1(config)
+            old_prompt = config.get("prompt", {})
+            if not isinstance(old_prompt, dict):
+                raise ValueError("invalid_prompt")
+            config["prompt"] = {**old_prompt, "mode": "strict", "approvals": {}}
             config = Settings.from_mapping(config).as_dict()
         except ValueError:
             return False
-        hass.config_entries.async_update_entry(entry, data={}, options=config, version=3, minor_version=1)
+        hass.config_entries.async_update_entry(entry, data={}, options=config, version=3, minor_version=2)
     return True

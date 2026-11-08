@@ -73,11 +73,11 @@ async def test_current_configuration_and_prompt_fingerprints_untouched(ha, setti
 
     config = deepcopy(settings_data)
     config["agents"].reverse()
-    config["agents"][0]["prompt_addition"] = "Ergänzung: Café e\u0301"
+    config["agents"][0]["prompt_addition"] = "ErgÃ¤nzung: CafÃ© e\u0301"
     config["agents"][1]["enabled"] = False
     config["prompt"] = {
         "enabled": True,
-        "text": "Gemeinsam: ä ö ü é\nZeile 2",
+        "text": "Gemeinsam: Ã¤ Ã¶ Ã¼ Ã©\nZeile 2",
         "reviews": {route["entity_id"]: "a" * 64 for route in config["agents"]},
     }
     config = Settings.from_mapping(config).as_dict()
@@ -89,7 +89,8 @@ async def test_current_configuration_and_prompt_fingerprints_untouched(ha, setti
     update = Mock()
     ha.hass.config_entries = SimpleNamespace(async_update_entry=update)
     assert await module.async_migrate_entry(ha.hass, entry)
-    update.assert_not_called()
+    update.assert_called_once()
+    assert update.call_args.kwargs == {"data": {}, "options": config, "version": 3, "minor_version": 2}
     assert vars(entry) == before and getattr(entry, storage) is config
     assert fingerprint(config) == digest
     assert PromptManager(Settings.from_mapping(config)).revision == revision

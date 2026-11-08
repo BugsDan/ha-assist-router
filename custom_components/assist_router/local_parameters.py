@@ -10,6 +10,91 @@ from collections.abc import Mapping
 
 INVALID = object()
 
+# Standard trusts the integration, but does not permit request-body replacement
+# of messages, templates or tools. Unknown overrides are not guessed to be safe.
+MODEL_PARAMETERS = frozenset(
+    {
+        "reasoning_effort",
+        "temperature",
+        "top_p",
+        "top_k",
+        "min_p",
+        "seed",
+        "max_tokens",
+        "max_completion_tokens",
+        "frequency_penalty",
+        "presence_penalty",
+        "repeat_penalty",
+        "repetition_penalty",
+        "mirostat",
+        "mirostat_eta",
+        "mirostat_tau",
+        "typical_p",
+        "tfs_z",
+        "n_keep",
+        "stop",
+        "logprobs",
+        "top_logprobs",
+    }
+)
+PROMPT_OVERRIDES = frozenset(
+    {
+        "messages",
+        "system",
+        "system_prompt",
+        "instructions",
+        "chat_template",
+        "tools",
+        "tool_choice",
+        "functions",
+        "function_call",
+        "template",
+    }
+)
+
+
+def has_prompt_override(value):
+    """Conservative recognition, not a claim to understand arbitrary integrations."""
+    if isinstance(value, Mapping):
+        return any(key in PROMPT_OVERRIDES or has_prompt_override(item) for key, item in value.items())
+    if isinstance(value, (list, tuple)):
+        return any(has_prompt_override(item) for item in value)
+    return False
+
+
+def standard_parameters(options):
+    """Return a blocking reason and non-sensitive warning codes, never render Jinja."""
+    warnings = []
+    try:
+        body = _pairs(options, "request_body_opts", "request_body_parameters")
+        template = _pairs(options, "chat_template_opts", "chat_template_kwargs")
+        if set(body) - MODEL_PARAMETERS - {"chat_template_kwargs"}:
+            return "unclassified_request_override", ()
+        nested = body.pop("chat_template_kwargs", {})
+        if not isinstance(nested, dict) or set(nested) - {"enable_thinking"}:
+            return "unsafe_request_overrides", ()
+        if set(template) - {"enable_thinking"}:
+            return "unsafe_request_overrides", ()
+        if any(
+            value is INVALID
+            or (isinstance(value, str) and any(marker in value for marker in ("{{", "{%", "{#")))
+            for value in (*body.values(), *template.values(), *nested.values())
+        ):
+            return "dynamic_request_override", ()
+        if body or template or nested:
+            warnings.append("model_parameters_present")
+        native = options.get("llamacpp_config", {})
+        if not isinstance(native, Mapping):
+            return "invalid_parameter_config", ()
+        if template or nested:
+            # 1.13 bool and 1.14 thinking_mode may override chat_template_kwargs.
+            warnings.append("thinking_settings_may_override_request")
+        if set(template) & set(nested):
+            warnings.append("duplicate_thinking_setting")
+        return "", tuple(warnings)
+    except (ValueError, TypeError):
+        return "invalid_parameter_config", ()
+
 
 def constant_value(value):
     """Recognize small literals and constant-only Jinja outputs, never execute them.

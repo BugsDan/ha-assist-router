@@ -34,6 +34,31 @@ def choice(options, translation_key=None):
     return selector.SelectSelector(selector.SelectSelectorConfig(**config))
 
 
+def warning_summary(codes, language):
+    messages = {
+        "model_parameters_present": (
+            "Modellparameter prüfen; keine neue Agentenfreigabe nötig.",
+            "Check model parameters; no new agent approval is required.",
+        ),
+        "thinking_settings_may_override_request": (
+            "Native Thinking-Einstellungen können Request-Parameter überschreiben.",
+            "Native thinking settings may override request parameters.",
+        ),
+        "duplicate_thinking_setting": (
+            "Thinking ist auf mehreren Parameterpfaden konfiguriert.",
+            "Thinking is configured through multiple parameter paths.",
+        ),
+        "agent_not_loaded": (
+            "Agent nicht geladen; er wird vor Übergabe übersprungen.",
+            "Agent is not loaded and will be skipped before delegation.",
+        ),
+    }
+    return (
+        "\n".join(messages.get(code, (code, code))[0 if language.startswith("de") else 1] for code in codes)
+        or "–"
+    )
+
+
 def merge_health(previous, user_input, kind):
     """Never put secrets into form defaults. Blank retains only at the same endpoint."""
     values = {**previous, **user_input, "kind": kind}
@@ -132,11 +157,12 @@ class RoutingFlow:
                 "enabled",
                 "health_agent",
                 "shared_prompt",
+                "security_mode",
                 "agent_prompt",
                 "prompt_review",
                 "finish",
             ],
-            description_placeholders={"agents": summary},
+            description_placeholders={"agents": summary, "mode": self._draft["prompt"].get("mode", "strict")},
         )
 
     async def async_step_manage(self, user_input=None):
@@ -327,6 +353,33 @@ class RoutingFlow:
             ),
         )
 
+    async def async_step_security_mode(self, user_input=None):
+        errors = {}
+        current = self._draft["prompt"].get("mode", "strict")
+        if user_input is not None:
+            mode = user_input.get("mode")
+            if mode not in ("standard", "strict"):
+                errors["base"] = "invalid_prompt"
+            elif (
+                current == "strict" and mode == "standard" and user_input.get("confirm_standard") is not True
+            ):
+                errors["base"] = "confirm_standard_required"
+            else:
+                self._draft["prompt"]["mode"] = mode
+                self._inspector = None
+                self._review_snapshot = None
+                return self._menu()
+        return self.async_show_form(
+            step_id="security_mode",
+            errors=errors,
+            data_schema=vol.Schema(
+                {
+                    vol.Required("mode", default=current): choice(["standard", "strict"], "security_mode"),
+                    vol.Required("confirm_standard", default=False): selector.BooleanSelector(),
+                }
+            ),
+        )
+
     async def async_step_agent_prompt(self, user_input=None):
         errors = {}
         if user_input is not None:
@@ -383,8 +436,9 @@ class RoutingFlow:
         )
 
     async def _get_inspector(self):
-        if self._inspector is None:
-            self._inspector = await async_make_inspector(self.hass)
+        mode = self._draft["prompt"].get("mode", "strict")
+        if self._inspector is None or getattr(self._inspector, "mode", mode) != mode:
+            self._inspector = await async_make_inspector(self.hass, mode)
         return self._inspector
 
     async def async_step_prompt_review_confirm(self, user_input=None):
@@ -398,7 +452,8 @@ class RoutingFlow:
             elif user_input.get("confirm") is not True:
                 errors["base"] = "prompt_confirm_required"
             else:
-                self._draft["prompt"]["reviews"][self._prompt_agent] = snapshot.fingerprint
+                field = "reviews" if self._draft["prompt"].get("mode", "strict") == "strict" else "approvals"
+                self._draft["prompt"].setdefault(field, {})[self._prompt_agent] = snapshot.fingerprint
                 return self._menu()
         self._review_snapshot = snapshot
         return self.async_show_form(
@@ -413,6 +468,9 @@ class RoutingFlow:
                     f"{name}: {digest}" for name, digest in snapshot.source_fingerprints.items()
                 )
                 or "–",
+                "mode": self._draft["prompt"].get("mode", "strict"),
+                "warnings": warning_summary(snapshot.warnings, self.hass.config.language),
+                "model": snapshot.model or "–",
             },
             data_schema=vol.Schema(
                 {
@@ -442,12 +500,12 @@ class RoutingFlow:
 
 class ConfigFlow(RoutingFlow, config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 3
-    MINOR_VERSION = 1
+    MINOR_VERSION = 2
 
     async def async_step_user(self, user_input=None):
         if self._async_current_entries():
             return self.async_abort(reason="single_instance_allowed")
-        self._start({"agents": []})
+        self._start({"agents": [], "prompt": asdict(PromptSettings(mode="standard"))})
         return await self.async_step_order(user_input)
 
     def _save(self, config):

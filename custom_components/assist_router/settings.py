@@ -123,10 +123,12 @@ class PromptSettings:
     enabled: bool = False
     text: str = field(default="", repr=False)
     reviews: dict = field(default_factory=dict, repr=False)
+    mode: str = "strict"  # Missing mode is always legacy Strict, never a silent downgrade.
+    approvals: dict = field(default_factory=dict, repr=False)
 
     @classmethod
     def from_mapping(cls, data):
-        if not isinstance(data, dict) or set(data) - {"enabled", "text", "reviews"}:
+        if not isinstance(data, dict) or set(data) - {"enabled", "text", "reviews", "mode", "approvals"}:
             raise ValueError("invalid_prompt")
         if type(data.get("enabled", False)) is not bool:
             raise ValueError("invalid_prompt")
@@ -134,13 +136,25 @@ class PromptSettings:
         validate_prompt_text(text)
         if data.get("enabled") and not text.strip():
             raise ValueError("invalid_prompt")
-        reviews = data.get("reviews", {})
-        if not isinstance(reviews, dict) or any(
-            not valid_agent_id(key) or not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{64}", value)
-            for key, value in reviews.items()
-        ):
+        mode = data.get("mode", "strict")
+        if mode not in ("standard", "strict"):
             raise ValueError("invalid_prompt")
-        return cls(data.get("enabled", False), text, dict(reviews))
+        for field_name in ("reviews", "approvals"):
+            values = data.get(field_name, {})
+            if not isinstance(values, dict) or any(
+                not valid_agent_id(key)
+                or not isinstance(value, str)
+                or not re.fullmatch(r"[0-9a-f]{64}", value)
+                for key, value in values.items()
+            ):
+                raise ValueError("invalid_prompt")
+        return cls(
+            data.get("enabled", False),
+            text,
+            dict(data.get("reviews", {})),
+            mode,
+            dict(data.get("approvals", {})),
+        )
 
 
 @dataclass(frozen=True)

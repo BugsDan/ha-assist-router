@@ -50,6 +50,39 @@ class Runtime:
         self.active = True
         self.last_agent = None
         self.last_reason = "not_used"
+        self.last_tools = {
+            "visibility": "not_observed",
+            "calls": 0,
+            "results": 0,
+            "errors": 0,
+            "unknown_results": 0,
+        }
+
+    def observe_tools(self, chat_log, start, agent_id=None):
+        """Only count native records; never read arguments, names or result data."""
+        summary = {
+            "agent": agent_id,
+            "visibility": "not_observed",
+            "calls": 0,
+            "results": 0,
+            "errors": 0,
+            "unknown_results": 0,
+        }
+        try:
+            for item in chat_log.content[start:]:
+                if getattr(item, "role", None) == "assistant":
+                    summary["calls"] += len(getattr(item, "tool_calls", None) or ())
+                if getattr(item, "role", None) == "tool_result":
+                    summary["results"] += 1
+                    error = getattr(getattr(item, "result", None), "error", None)
+                    summary["errors"] += int(error is True)
+                    summary["unknown_results"] += int(type(error) is not bool)
+            if summary["calls"] or summary["results"]:
+                summary["visibility"] = "native_chat_log_only"
+        except Exception:
+            # Diagnostics must not change routing or the certainty of an action.
+            summary["visibility"] = "unavailable"
+        self.last_tools = summary
 
     async def select(self, state, eligible):
         # An answer to a clarification must not silently change backend.

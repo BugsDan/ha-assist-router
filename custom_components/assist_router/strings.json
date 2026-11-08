@@ -11,7 +11,7 @@
       },
       "manage": {
         "title": "Configure Assist Router",
-        "description": "Current order (✓ enabled, – disabled):\n{agents}\n\nChanges are applied only when you choose Save.",
+        "description": "Current order (✓ enabled, – disabled):\n{agents}\n\nChanges are applied only when you choose Save.\n\nSecurity mode: {mode}. Existing 1.2.1 entries stay in Strict after migration.",
         "menu_options": {
           "order": "Select, order or remove agents",
           "position": "Change an agent position",
@@ -20,7 +20,8 @@
           "finish": "Save",
           "shared_prompt": "Edit shared prompt",
           "agent_prompt": "Edit an agent addition",
-          "prompt_review": "Review and approve agent baseline"
+          "prompt_review": "Review and approve agent baseline",
+          "security_mode": "Choose security mode"
         }
       },
       "position": {
@@ -93,17 +94,25 @@
       },
       "prompt_review": {
         "title": "Review agent baseline and implementation",
-        "description": "Read-only review. Back up the old prompt, move business rules into the router, then replace the baseline in the existing agent dialog with the neutral text shown next. Keep tool selection. Wait for agent reload. Unknown source versions are rejected.",
+        "description": "Read-only review in the selected mode. Set the neutral baseline in the existing agent dialog; tools remain configured there. Standard approves identity and backend trust scope; Strict additionally verifies source and configuration hashes.",
         "data": {
           "entity_id": "Agent"
         }
       },
       "prompt_review_confirm": {
         "title": "Confirm read-only review",
-        "description": "Agent: {agent}\nIntegration: {domain}\nStatus: {status}\nConfiguration fingerprint (SHA-256): {fingerprint}\nSource fingerprints: {sources}\n\nOnly ready can be confirmed. The existing agent dialog must contain the exact neutral baseline. Narrow parameter allowlist: reasoning_effort=none and constant enable_thinking=false with the audited llama.cpp mixin. Unknown or dynamic values remain blocked. All parameters stay fingerprinted; changes require review. Confirmation saves only a fingerprint in the router. Choose Save to apply. External tool prompts and backend templates remain outside this review.",
+        "description": "Agent: {agent}\nIntegration: {domain}\nMode: {mode}\nConfigured model (when available): {model}\nStatus: {status}\nWarnings: {warnings}\nApproval fingerprint: {fingerprint}\nSource fingerprints (Strict only): {sources}\n\nOnly ready can be confirmed. Standard persists approval of identity and backend, independently of models, model parameters and integration versions. A backend change requires confirmation again. Strict retains full source/configuration verification. External tools and backend templates remain outside exclusive prompt control. Choose Save to apply.",
         "data": {
           "neutral_baseline": "Neutral baseline (copy)",
           "confirm": "Confirm reviewed result and remaining agent/tool settings"
+        }
+      },
+      "security_mode": {
+        "title": "Security mode",
+        "description": "Standard trusts the approved agent identity and backend, independently of models and routine integration updates. Strict additionally checks exact sources and full configuration. Leaving Strict requires explicit confirmation. Changes while additions are enabled require new conversations.",
+        "data": {
+          "mode": "Mode",
+          "confirm_standard": "I confirm switching to Standard without exact source verification"
         }
       }
     },
@@ -121,8 +130,9 @@
       "acknowledge_additive": "Confirm additive behavior and conversation boundaries.",
       "prompt_review_required": "All active agents need a current compatible prompt review. Select an agent and inspect its status.",
       "prompt_not_compatible": "Review is incompatible. Inspect the status; no agent is modified or bypassed.",
-      "prompt_changed": "Agent configuration changed since display. Review the new fingerprint before confirming again.",
-      "prompt_confirm_required": "Explicitly confirm the review result."
+      "prompt_changed": "The approval basis changed. Inspect the new result before confirming again.",
+      "prompt_confirm_required": "Explicitly confirm the review result.",
+      "confirm_standard_required": "Explicitly confirm switching from Strict to Standard."
     },
     "abort": {
       "single_instance_allowed": "Only one Assist Router entry is supported."
@@ -139,7 +149,7 @@
       },
       "manage": {
         "title": "Configure Assist Router",
-        "description": "Current order (✓ enabled, – disabled):\n{agents}\n\nChanges are applied only when you choose Save.",
+        "description": "Current order (✓ enabled, – disabled):\n{agents}\n\nChanges are applied only when you choose Save.\n\nSecurity mode: {mode}. Existing 1.2.1 entries stay in Strict after migration.",
         "menu_options": {
           "order": "Select, order or remove agents",
           "position": "Change an agent position",
@@ -148,7 +158,8 @@
           "finish": "Save",
           "shared_prompt": "Edit shared prompt",
           "agent_prompt": "Edit an agent addition",
-          "prompt_review": "Review and approve agent baseline"
+          "prompt_review": "Review and approve agent baseline",
+          "security_mode": "Choose security mode"
         }
       },
       "position": {
@@ -221,17 +232,25 @@
       },
       "prompt_review": {
         "title": "Review agent baseline and implementation",
-        "description": "Read-only review. Back up the old prompt, move business rules into the router, then replace the baseline in the existing agent dialog with the neutral text shown next. Keep tool selection. Wait for agent reload. Unknown source versions are rejected.",
+        "description": "Read-only review in the selected mode. Set the neutral baseline in the existing agent dialog; tools remain configured there. Standard approves identity and backend trust scope; Strict additionally verifies source and configuration hashes.",
         "data": {
           "entity_id": "Agent"
         }
       },
       "prompt_review_confirm": {
         "title": "Confirm read-only review",
-        "description": "Agent: {agent}\nIntegration: {domain}\nStatus: {status}\nConfiguration fingerprint (SHA-256): {fingerprint}\nSource fingerprints: {sources}\n\nOnly ready can be confirmed. The existing agent dialog must contain the exact neutral baseline. Narrow parameter allowlist: reasoning_effort=none and constant enable_thinking=false with the audited llama.cpp mixin. Unknown or dynamic values remain blocked. All parameters stay fingerprinted; changes require review. Confirmation saves only a fingerprint in the router. Choose Save to apply. External tool prompts and backend templates remain outside this review.",
+        "description": "Agent: {agent}\nIntegration: {domain}\nMode: {mode}\nConfigured model (when available): {model}\nStatus: {status}\nWarnings: {warnings}\nApproval fingerprint: {fingerprint}\nSource fingerprints (Strict only): {sources}\n\nOnly ready can be confirmed. Standard persists approval of identity and backend, independently of models, model parameters and integration versions. A backend change requires confirmation again. Strict retains full source/configuration verification. External tools and backend templates remain outside exclusive prompt control. Choose Save to apply.",
         "data": {
           "neutral_baseline": "Neutral baseline (copy)",
           "confirm": "Confirm reviewed result and remaining agent/tool settings"
+        }
+      },
+      "security_mode": {
+        "title": "Security mode",
+        "description": "Standard trusts the approved agent identity and backend, independently of models and routine integration updates. Strict additionally checks exact sources and full configuration. Leaving Strict requires explicit confirmation. Changes while additions are enabled require new conversations.",
+        "data": {
+          "mode": "Mode",
+          "confirm_standard": "I confirm switching to Standard without exact source verification"
         }
       }
     },
@@ -249,8 +268,9 @@
       "acknowledge_additive": "Confirm additive behavior and conversation boundaries.",
       "prompt_review_required": "All active agents need a current compatible prompt review. Select an agent and inspect its status.",
       "prompt_not_compatible": "Review is incompatible. Inspect the status; no agent is modified or bypassed.",
-      "prompt_changed": "Agent configuration changed since display. Review the new fingerprint before confirming again.",
-      "prompt_confirm_required": "Explicitly confirm the review result."
+      "prompt_changed": "The approval basis changed. Inspect the new result before confirming again.",
+      "prompt_confirm_required": "Explicitly confirm the review result.",
+      "confirm_standard_required": "Explicitly confirm switching from Strict to Standard."
     }
   },
   "selector": {
@@ -272,6 +292,12 @@
       "options": {
         "loaded": "Loaded (recommended)",
         "present": "Present (including unloaded)"
+      }
+    },
+    "security_mode": {
+      "options": {
+        "standard": "Standard",
+        "strict": "Strict"
       }
     }
   }

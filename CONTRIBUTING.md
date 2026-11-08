@@ -14,7 +14,7 @@ python tools/generate_prompt_contracts.py
 python -m pytest tests tests_live -q
 ruff check custom_components tests tests_live tools
 ruff format --check custom_components tests tests_live tools
-python tools/check_repository.py --tag v1.2.1
+python tools/check_repository.py --tag v1.3.0
 python tools/secret_scan.py
 python tools/build_release.py
 ```
@@ -30,3 +30,5 @@ Quellenverträge nie blind aktualisieren. Diff, Original-Commit/Tag, Lizenz und 
 Vor jedem Commit die **tatsächlich gestagten Dateien** mit `git diff --cached` prüfen. Nur den Inhalt des neuen Projektordners übernehmen, keine übergeordneten Codex-Dateien, .storage, .venv oder dist. Lokaler Gitleaks-Scan des Publikationsumfangs plus GitHub-Scan der gesamten Git-Historie ergänzen sich. Historische Secrets sind nicht durch Löschen einer aktuellen Datei bereinigt.
 
 Die vorbereiteten Workflows besitzen nur contents:read und erzeugen keine Commits, Tags, Releases oder Deployments. Das erste öffentliche Repository, dessen Beschreibung/Topics und v1.2.1 dürfen erst nach gesonderter Freigabe angelegt werden. Siehe docs/GITHUB_HACS.md.
+
+Entwicklungsstand 1.3.0: [Architektur und Grenzen](docs/ARCHITEKTUR_1.3.0.md), [vorbereitete CI-Abnahme](docs/CI_ABNAHME_1.3.0.md). Keine Commits oder Pushes ohne gesonderte Freigabe.

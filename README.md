@@ -1,8 +1,12 @@
-# Assist Router 1.2.1 für Home Assistant
+# Assist Router 1.3.0 für Home Assistant — lokale Entwicklung
 
 <img src="custom_components/assist_router/brand/icon.png" alt="Assist Router: Gespräch mit drei Routing-Zielen" width="80" height="80">
 
-Erste öffentliche Baseline für **BugsDan/ha-assist-router**, lokal vorbereitet. Eigenständige Custom Integration; kein offizielles Home-Assistant-Projekt. **Funktionsstand 1.2.1 bleibt erhalten. Einzige notwendige Bereinigung: Die alte 1.0-Migration verwendet keine private Default-URL mehr; sie verlangt einen explizit gespeicherten gültigen Endpunkt.**
+**Nicht veröffentlicht.** Entwicklung auf `development/1.3.0`, ohne Commits oder produktive HA-Änderungen. [Architektur, Migration und Grenzen von 1.3.0](docs/ARCHITEKTUR_1.3.0.md). Eigenständige Custom Integration; kein offizielles Home-Assistant-Projekt.
+
+1.3.0 ergänzt **Standard** (dauerhafte Freigabe der Agentenidentität und des Backend-Vertrauensbereichs, unabhängig von Modell und Routineupdates) und **Strict** (bisherige exakte Quell-/Konfigurationsprüfung). Neue Einrichtungen starten mit Standard und ausgeschaltetem Zusatzprompt. Bestehende Einträge werden auf Schema 3.2 und Strict übernommen; keine automatische Herabstufung oder Übernahme alter Hashes als Standard-Freigabe.
+
+Die folgenden HACS-/Installationshinweise beschreiben die veröffentlichte 1.2.1-Baseline. Für 1.3.0 steht eine gesonderte CI- und HA-Abnahme aus; keine Installation wird durch diese Entwicklung ausgeführt.
 
 Ein generischer Conversation-Router für vorhandene `conversation.*`-Entities. Reihenfolge und Anzahl sind frei konfigurierbar; mindestens ein Agent bleibt aktiv. Jeder Agent kann eine eigene optionale Health-Prüfung erhalten. Es gibt keine festen Providerrollen im Routing. Optional lassen sich gemeinsame Geschäftsanweisungen als geprüfter Zusatz zentral pflegen. Der Router schreibt keine bestehenden Agents, Prompts, Werkzeuge oder Automationen um; die einmalige Basisprompt-Neutralisierung erfolgt bewusst in deren vorhandenen HA-Dialogen.
 
@@ -44,7 +48,7 @@ Die Übersicht zeigt Priorität, Aktivierung und Prüftyp. Reihenfolge, Aktivier
 
 Es gibt keine Begrenzung auf drei Agents und keine vorgegebenen Agent- oder Modellnamen bei neuer Einrichtung. Der native Home-Assistant-Agent sowie alle registrierten Assist-Router-Entities sind als Routing-Ziele ausgeschlossen. Fehlende/entladene Zielintegrationen führen vor einer Übergabe zum Überspringen; `unknown` allein gilt nicht als Ausfall, da Conversation-Entities vor ihrem ersten Aufruf noch keinen Aktivitätszeitstempel besitzen können.
 
-## Seit 1.2.0, Parameterfreigabe ab 1.2.1: Zentrale Geschäftsanweisungen als Zusatz
+## Bisherige Strict-Prüfung aus 1.2.1: Zentrale Geschäftsanweisungen als Zusatz
 
 **Standardmässig deaktiviert.** Der Router kann gemeinsame mehrzeilige Anweisungen und optionale Ergänzungen pro Agent über `extra_system_prompt` übergeben. Das ersetzt keine Agent-, HA- oder Werkzeuginstruktionen exklusiv. Die einmalige Neutralisierung alter Geschäftsregeln erfolgt bewusst **manuell in den vorhandenen Agent-Dialogen**. Der Router liest fremde Config Entries, schreibt sie aber niemals um.
 
@@ -115,7 +119,7 @@ Die Einkaufslisten-Automation bleibt unverändert. Ein Satztrigger oder deren di
 
 ## Diagnose, Erweiterung und Updates
 
-Der HA-Diagnosedownload zeigt geordnete Agents, Aktivierung, Prüftypen, letzte Health-/Routingentscheidung und Sitzungszähler. Zusätzlich enthält er Promptmodus, Revision und aktuelle/geprüfte SHA-256-Fingerprints. Keine Prompttexte, URLs, Zugangsdaten, Modellschlüssel, Toolargumente, Conversation-IDs oder Gesprächsinhalte. HA-eigene Traces und Providerlogs können weiterhin Inhalte enthalten. Einrichtungsdialog Deutsch/Englisch; routereigene Fehlerantworten derzeit Deutsch. Keine vollständige Streaming-Garantie.
+Der HA-Diagnosedownload zeigt geordnete Agents, Aktivierung, Prüftypen, letzte Health-/Routingentscheidung und Sitzungszähler. Zusätzlich enthält er Promptmodus, Revision und aktuelle/geprüfte SHA-256-Fingerprints. 1.3.0 ergänzt Modus, Warncodes, Fehlerkategorie und das konfigurierte Modell, soweit lesbar, sowie reine Werkzeugzähler. Modellangaben sind keine Messung der tatsächlich vom Backend verwendeten Instanz. Keine Prompttexte, URLs, Zugangsdaten, Toolargumente, Werkzeugnamen, Rohresultate, Conversation-IDs oder Gesprächsinhalte. HA-eigene Traces und Providerlogs können weiterhin Inhalte enthalten. Einrichtungsdialog Deutsch/Englisch; routereigene Fehlerantworten derzeit Deutsch. Keine vollständige Streaming-Garantie.
 
 Weitere Prüftypen werden in `health_types.CHECK_TYPES` registriert. Routing und Sicherheitslogik kennen keine konkreten Provider. Gemeinsamer HTTP-Transport, Authentifizierung, Größenlimit und Cache bleiben wiederverwendbar. Für neue Predicate-Felder gegebenenfalls den Health-Formularadapter erweitern. Details: [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md).
 
@@ -138,7 +142,7 @@ python tools/generate_prompt_contracts.py
 python -m pytest tests tests_live -q --junitxml=docs/test-results.xml
 python -m ruff check custom_components tests tests_live tools
 python -m ruff format --check custom_components tests tests_live tools
-python tools/check_repository.py --tag v1.2.1
+python tools/check_repository.py --tag v1.3.0
 python tools/build_release.py
 ```
 

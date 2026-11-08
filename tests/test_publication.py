@@ -1,4 +1,4 @@
-"""Repository checks; sole approved runtime delta is legacy URL cleanup."""
+"""Repository metadata, historical baseline and frozen Strict-source contract checks."""
 
 import hashlib
 import importlib.util
@@ -27,7 +27,7 @@ def tool(name):
         sys.path.pop(0)
 
 
-def test_runtime_baseline_with_only_approved_cleanup_and_same_config_schema():
+def test_historical_baseline_and_strict_source_contracts_are_preserved():
     assert tool("check_repository").baseline_errors() == []
     baseline = json.loads((ROOT / "docs/baseline-1.2.1.json").read_text())
     assert baseline["config_entry_version"] == 3 and baseline["config_entry_minor_version"] == 1
@@ -81,7 +81,7 @@ def test_hacs_layout_and_local_icons_match_documented_versions():
 
 
 def test_repository_metadata_and_hygiene_pass():
-    assert tool("check_repository").validate(tag="v1.2.1") == []
+    assert tool("check_repository").validate(tag="v1.3.0") == []
 
 
 def test_generated_json_is_reproducible_utf8_lf(monkeypatch, tmp_path):

@@ -1,5 +1,7 @@
 # Assist Router 1.2.1: Zentrale Geschäftsanweisungen als Zusatz
 
+> **Entwicklung 1.3.0:** Diese bisherige Anleitung beschreibt die Strict-Prüfung. Standard mit dauerhafter Agent-/Backend-Freigabe und Migration auf Schema 3.2 wird in [ARCHITEKTUR_1.3.0.md](ARCHITEKTUR_1.3.0.md) beschrieben. 1.3.0 ist noch nicht veröffentlicht.
+
 ## Wirkung und sichere Einführung
 
 Die neue Funktion ist bei Neuinstallation und Update **aus**. Ein Update schreibt nur den Router-Eintrag auf Schema 3.1. Es aktiviert keinen Promptmodus, neutralisiert keinen Agent und ändert weder Pipeline noch Einkaufslisten-Automation. Der bisherige Zusatzprompt wird ausgeschaltet unverändert durchgereicht, einschliesslich `None` und leerem String. Weiterhin „Befehle bevorzugt lokal verarbeiten“ in der Assist-Pipeline aktiviert lassen.

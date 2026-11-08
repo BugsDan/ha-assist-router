@@ -149,6 +149,7 @@ class AssistRouter(conversation.ConversationEntity):
         if not runtime.active:
             return self._error(user_input, chat_log.conversation_id, "Der Router wird neu geladen.")
         # Every error below is AFTER dispatch: never call a different agent here.
+        tool_start = len(chat_log.content)
         try:
             result = await conversation.async_converse(
                 hass=self.hass,
@@ -197,6 +198,8 @@ class AssistRouter(conversation.ConversationEntity):
                 "Es erfolgt keine automatische Wiederholung; bitte den tatsächlichen Zustand prüfen.",
                 chat_log,
             )
+        finally:
+            runtime.observe_tools(chat_log, tool_start, agent_id)
 
     def _prompt_error(self, user_input, chat_log):
         self.runtime.last_reason = "prompt_review_required"

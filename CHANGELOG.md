@@ -1,5 +1,11 @@
 # Änderungen
 
+## 1.3.0 — unveröffentlicht
+
+- Standard mit dauerhafter, modellunabhängiger Agent-/Backend-Freigabe; Strict unverändert mit exakten Quell- und Konfigurationshashes.
+- Migration auf Schema 3.2 und Strict, bewusster Wechsel zu Standard, Sicherheitsblockaden getrennt von Modellparameterwarnungen.
+- Datensparsame Modus-/Modell-/Werkzeugdiagnostik und zusätzliche Regressionen; keine Veröffentlichung oder produktive HA-Änderung.
+
 ## Öffentliche Vorbereitung 1.2.1 – notwendige URL-Bereinigung
 
 - Private Default-URL aus der historischen 1.0-Migration entfernt. Explizit gespeicherte Endpunkte bleiben unverändert; bei fehlender/ungültiger URL atomarer Abbruch ohne Config-Entry-Änderung.
