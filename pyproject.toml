@@ -5,7 +5,7 @@ requires-python = ">=3.12"
 dependencies = ["aiohttp>=3.11,<4", "probatio>=0.13,<1"]
 
 [project.optional-dependencies]
-test = ["pytest>=8,<10", "pytest-asyncio>=0.25,<2", "ruff>=0.9,<1", "Jinja2==3.1.6", "Pillow==11.3.0", "PyYAML==6.0.3"]
+test = ["pytest>=8,<10", "pytest-asyncio>=0.25,<2", "ruff>=0.9,<1", "Jinja2==3.1.6", "Pillow==13.0.0", "PyYAML==6.0.3"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
