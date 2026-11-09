@@ -161,6 +161,7 @@ class PromptSettings:
 class Settings:
     routes: tuple[AgentConfig, ...]
     prompt: PromptSettings = field(default_factory=PromptSettings)
+    jit_load: bool = False
 
     @property
     def agents(self):
@@ -171,8 +172,9 @@ class Settings:
     def from_mapping(cls, data):
         if (
             not isinstance(data, dict)
-            or set(data) - {"agents", "prompt"}
+            or set(data) - {"agents", "prompt", "jit_load"}
             or not isinstance(data.get("agents"), list)
+            or type(data.get("jit_load", False)) is not bool
         ):
             raise ValueError("invalid_agents")
         routes = tuple(AgentConfig.from_mapping(item) for item in data["agents"])
@@ -181,7 +183,11 @@ class Settings:
             raise ValueError("invalid_agents")
         if not any(route.enabled for route in routes):
             raise ValueError("no_active_agents")
-        return cls(routes, PromptSettings.from_mapping(data.get("prompt", {})))
+        return cls(routes, PromptSettings.from_mapping(data.get("prompt", {})), data.get("jit_load", False))
 
     def as_dict(self):
-        return {"agents": [asdict(route) for route in self.routes], "prompt": asdict(self.prompt)}
+        return {
+            "agents": [asdict(route) for route in self.routes],
+            "prompt": asdict(self.prompt),
+            "jit_load": self.jit_load,
+        }

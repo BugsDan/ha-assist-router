@@ -17,10 +17,11 @@ __all__ = ["Health", "HealthChecks", "ModelHealth", "parse_models"]
 class ModelHealth:
     """One check; concurrent callers share a result, including with TTL zero."""
 
-    def __init__(self, session: aiohttp.ClientSession, settings: HealthSettings, clock=monotonic):
+    def __init__(self, session: aiohttp.ClientSession, settings: HealthSettings, clock=monotonic, jit=False):
         self.session = session
         self.settings = settings
         self.clock = clock
+        self.jit = jit
         self.last = Health(False, "not_checked")
         self._expires = 0.0
         self._generation = 0
@@ -34,6 +35,10 @@ class ModelHealth:
             self.last = await self._probe()
             self._generation += 1
             ttl = self.settings.cache_seconds if self.last.ready else self.settings.failure_cache_seconds
+            # A negative inventory must not keep authorizing JIT after a model
+            # was loaded by another request; concurrent probes still coalesce.
+            if self.jit and self.last.jit_available:
+                ttl = 0
             self._expires = self.clock() + ttl
             return self.last
 
@@ -75,7 +80,7 @@ class HealthChecks:
 
     def __init__(self, session, settings):
         self.checks = {
-            route.entity_id: ModelHealth(session, route.health)
+            route.entity_id: ModelHealth(session, route.health, jit=settings.jit_load)
             for route in settings.routes
             if route.enabled and route.health is not None
         }

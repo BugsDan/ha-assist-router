@@ -8,6 +8,7 @@ from typing import Callable
 class Health:
     ready: bool
     reason: str
+    jit_available: bool = False
 
 
 def parse_models(data, model_key: str, instance_id: str, model_state="loaded") -> Health:
@@ -27,7 +28,12 @@ def parse_models(data, model_key: str, instance_id: str, model_state="loaded") -
     if model_state == "present":
         return Health(True, "model_present")
     if not instances:
-        return Health(False, "model_unloaded")
+        # Only consider JIT when the complete server inventory establishes that
+        # no model is loaded. An explicit instance ID cannot be guaranteed by JIT.
+        empty_server = all(
+            isinstance(item.get("loaded_instances"), list) and not item["loaded_instances"] for item in models
+        )
+        return Health(False, "model_unloaded", empty_server and not instance_id)
     if instance_id and not any(item["id"] == instance_id for item in instances):
         return Health(False, "instance_missing")
     return Health(True, "ready")

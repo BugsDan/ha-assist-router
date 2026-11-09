@@ -4,9 +4,10 @@
     "step": {
       "order": {
         "title": "Select and order agents",
-        "description": "Select active agents in priority order. Removed agents and their health checks are retained inactive and can be added again.",
+        "description": "Select active agents in priority order. Removed agents and their health checks are retained inactive and can be added again.\n\nJIT: When enabled and the LM Studio server reports no loaded models, the first matching local agent may load its installed model using its normal request. JIT must be enabled in LM Studio. An explicit instance ID prevents JIT.",
         "data": {
-          "agent_order": "Agents in priority order"
+          "agent_order": "Agents in priority order",
+          "jit_load": "Use LM Studio JIT when no model is loaded"
         }
       },
       "manage": {
@@ -143,9 +144,10 @@
     "step": {
       "order": {
         "title": "Select and order agents",
-        "description": "Select active agents in priority order. Removed agents and their health checks are retained inactive and can be added again.",
+        "description": "Select active agents in priority order. Removed agents and their health checks are retained inactive and can be added again.\n\nJIT: When enabled and the LM Studio server reports no loaded models, the first matching local agent may load its installed model using its normal request. JIT must be enabled in LM Studio. An explicit instance ID prevents JIT.",
         "data": {
-          "agent_order": "Agents in priority order"
+          "agent_order": "Agents in priority order",
+          "jit_load": "Use LM Studio JIT when no model is loaded"
         }
       },
       "manage": {

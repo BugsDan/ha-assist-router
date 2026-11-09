@@ -22,6 +22,8 @@ def baseline_errors(root=ROOT):
         {
             "__init__.py",
             "const.py",
+            "health.py",
+            "health_types.py",
             "config_flow.py",
             "settings.py",
             "prompts.py",

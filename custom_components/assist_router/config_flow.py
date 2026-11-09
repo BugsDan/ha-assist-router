@@ -178,6 +178,7 @@ class RoutingFlow:
                 existing = {item["entity_id"]: item for item in self._draft["agents"]}
                 draft = {
                     **self._draft,
+                    "jit_load": user_input.get("jit_load", self._draft.get("jit_load", False)),
                     "agents": [
                         {
                             **deepcopy(existing.get(entity_id, {"entity_id": entity_id, "health": None})),
@@ -205,7 +206,10 @@ class RoutingFlow:
                 {
                     vol.Required("agent_order", default=self._ids()): entity_selector(
                         self._excluded(), multiple=True, reorder=True
-                    )
+                    ),
+                    vol.Required(
+                        "jit_load", default=self._draft.get("jit_load", False)
+                    ): selector.BooleanSelector(),
                 }
             ),
         )

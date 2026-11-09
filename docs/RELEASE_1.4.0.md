@@ -3,6 +3,7 @@
 Der Assist Router wählt den ersten verfügbaren Agenten gemäss der konfigurierten Priorität.
 
 - Eine sortierbare Liste für aktive Agents; entfernte Agents behalten ihre Health-Einstellungen.
+- Optionales LM-Studio-JIT: Ist kein Modell auf dem Server geladen, kann die normale Anfrage an den ersten passenden Agenten das konfigurierte Modell laden. Standardmässig aus.
 - Individuelle Health-Checks inklusive LM Studio und geladener Modelle bleiben erhalten.
 - Der gemeinsame Prompt ergänzt den Prompt des jeweiligen Agents, sofern dieser Zusätze unterstützt.
 - Die bisherigen Standard-/Strict-Freigaben und Quell-, Backend- und Parameterprüfungen entfallen. Agents und ihre Backend-Konfiguration liegen in der Verantwortung der Betreibenden.

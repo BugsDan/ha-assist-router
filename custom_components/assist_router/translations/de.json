@@ -4,9 +4,10 @@
     "step": {
       "order": {
         "title": "Agents auswählen und sortieren",
-        "description": "Aktive Agents auswählen und nach Priorität sortieren. Entfernte Agents bleiben mit ihren Health-Checks inaktiv gespeichert und können später wieder hinzugefügt werden.",
+        "description": "Aktive Agents auswählen und nach Priorität sortieren. Entfernte Agents bleiben mit ihren Health-Checks inaktiv gespeichert und können später wieder hinzugefügt werden.\n\nJIT: Falls aktiviert und der LM-Studio-Server kein geladenes Modell meldet, darf der erste passende lokale Agent ein vorhandenes Modell durch seine normale Anfrage laden. JIT muss in LM Studio aktiviert sein. Eine explizite Instanz-ID verhindert JIT.",
         "data": {
-          "agent_order": "Agents in Prioritätsreihenfolge"
+          "agent_order": "Agents in Prioritätsreihenfolge",
+          "jit_load": "LM Studio JIT verwenden, wenn kein Modell geladen ist"
         }
       },
       "manage": {
@@ -143,9 +144,10 @@
     "step": {
       "order": {
         "title": "Agents auswählen und sortieren",
-        "description": "Aktive Agents auswählen und nach Priorität sortieren. Entfernte Agents bleiben mit ihren Health-Checks inaktiv gespeichert und können später wieder hinzugefügt werden.",
+        "description": "Aktive Agents auswählen und nach Priorität sortieren. Entfernte Agents bleiben mit ihren Health-Checks inaktiv gespeichert und können später wieder hinzugefügt werden.\n\nJIT: Falls aktiviert und der LM-Studio-Server kein geladenes Modell meldet, darf der erste passende lokale Agent ein vorhandenes Modell durch seine normale Anfrage laden. JIT muss in LM Studio aktiviert sein. Eine explizite Instanz-ID verhindert JIT.",
         "data": {
-          "agent_order": "Agents in Prioritätsreihenfolge"
+          "agent_order": "Agents in Prioritätsreihenfolge",
+          "jit_load": "LM Studio JIT verwenden, wenn kein Modell geladen ist"
         }
       },
       "manage": {

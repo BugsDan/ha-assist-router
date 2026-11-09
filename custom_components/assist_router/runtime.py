@@ -92,12 +92,16 @@ class Runtime:
                 continue
             if not eligible(agent_id):
                 continue
-            if not (await self.health.check(agent_id)).ready:
+            health = await self.health.check(agent_id)
+            jit = self.settings.jit_load and health.jit_available
+            if not health.ready and not jit:
                 continue
             # Recheck after the network await, before any dispatch.
             if self.active and eligible(agent_id):
                 self.last_agent = agent_id
-                self.last_reason = "follow_up" if state.pending_agent else "selected"
+                self.last_reason = (
+                    "jit_candidate" if jit else "follow_up" if state.pending_agent else "selected"
+                )
                 return agent_id
         self.last_agent = None
         self.last_reason = "follow_up_unavailable" if state.pending_agent else "no_backend"
