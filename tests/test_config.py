@@ -134,40 +134,26 @@ async def test_offline_setup_ordered_selector_and_single_agent(ha, monkeypatch):
     assert module.ConfigFlow.VERSION == 3
 
 
-async def test_sort_add_remove_enable_and_position_preserve_health(ha, monkeypatch, health_data):
-    _, flow = new_flow(ha, monkeypatch)
-    await flow.async_step_user({"agent_order": [f"conversation.agent_{i}" for i in range(6)]})
-    assert (await flow.async_step_health_agent({"entity_id": "conversation.agent_2"}))[
-        "step_id"
-    ] == "health_type"
-    await flow.async_step_health_type({"kind": "lm_studio"})
-    await flow.async_step_health(health_data | {"token": "secret", "auth_type": "bearer"})
-    await flow.async_step_enabled({"enabled_agents": ["conversation.agent_0", "conversation.agent_2"]})
-    await flow.async_step_order(
-        {"agent_order": ["conversation.agent_2", "conversation.agent_0", "conversation.new"]}
-    )
-    assert flow._draft["agents"][0]["health"]["token"] == "secret"
-    assert flow._draft["agents"][2]["enabled"]  # new agents default to enabled
-    await flow.async_step_position({"entity_id": "conversation.agent_2", "position": 3})
-    result = await flow.async_step_finish()
-    assert [item["entity_id"] for item in result["options"]["agents"]] == [
-        "conversation.agent_0",
-        "conversation.new",
-        "conversation.agent_2",
-    ]
-    assert result["options"]["agents"][2]["health"]["model_key"] == health_data["model_key"]
-    assert len(result["options"]["agents"]) == 3
-
-
-async def test_cannot_save_or_remove_last_active_agent(ha, monkeypatch):
+async def test_sort_remove_readd_preserves_health(ha, monkeypatch, health_data):
     _, flow = new_flow(ha, monkeypatch)
     await flow.async_step_user({"agent_order": ["conversation.a", "conversation.b"]})
-    await flow.async_step_enabled({"enabled_agents": ["conversation.a"]})
+    await flow.async_step_health_agent({"entity_id": "conversation.b"})
+    await flow.async_step_health_type({"kind": "lm_studio"})
+    await flow.async_step_health(health_data | {"token": "secret", "auth_type": "bearer"})
+    await flow.async_step_order({"agent_order": ["conversation.a"]})
+    assert not flow._draft["agents"][1]["enabled"]
+    assert flow._draft["agents"][1]["health"]["token"] == "secret"
+    await flow.async_step_order({"agent_order": ["conversation.b", "conversation.a"]})
+    result = await flow.async_step_finish()
+    assert result["options"]["agents"][0]["health"]["model_key"] == health_data["model_key"]
+
+
+async def test_cannot_remove_last_active_agent(ha, monkeypatch):
+    _, flow = new_flow(ha, monkeypatch)
+    await flow.async_step_user({"agent_order": ["conversation.a"]})
     before = deepcopy(flow._draft)
-    error = await flow.async_step_enabled({"enabled_agents": []})
-    assert error["errors"]["base"] == "no_active_agents" and flow._draft == before
-    error = await flow.async_step_order({"agent_order": ["conversation.b"]})
-    assert error["errors"]["base"] == "no_active_agents" and flow._draft == before
+    error = await flow.async_step_order({"agent_order": []})
+    assert error["errors"]["base"] == "invalid_agents" and flow._draft == before
     assert (await flow.async_step_finish())["type"] == "create_entry"
 
 

@@ -4,14 +4,14 @@
     "step": {
       "order": {
         "title": "Agents auswählen und sortieren",
-        "description": "Reihenfolge von oben nach unten. Agents hinzufügen, entfernen und per Ziehen sortieren; Health-Einstellungen bleiben an ihrer Entity-ID. Neue Agents sind aktiviert. Alternativ Position im Menü ändern.",
+        "description": "Aktive Agents auswählen und nach Priorität sortieren. Entfernte Agents bleiben mit ihren Health-Checks inaktiv gespeichert und können später wieder hinzugefügt werden.",
         "data": {
           "agent_order": "Agents in Prioritätsreihenfolge"
         }
       },
       "manage": {
         "title": "Assist Router konfigurieren",
-        "description": "Aktuelle Reihenfolge (✓ aktiviert, – deaktiviert):\n{agents}\n\nÄnderungen werden erst mit Speichern übernommen.\n\nSicherheitsmodus: {mode}. Bestehende 1.2.1-Einträge bleiben nach Migration in Strict.",
+        "description": "Reihenfolge (✓ aktiv, – inaktiv):\n{agents}\n\nÄnderungen werden erst mit Speichern übernommen. Die frühere Prompt- und Backend-Prüfung entfällt; Agents und ihre Einstellungen liegen in deiner Verantwortung.",
         "menu_options": {
           "order": "Agents auswählen, sortieren oder entfernen",
           "position": "Position eines Agents ändern",
@@ -72,11 +72,12 @@
       },
       "shared_prompt": {
         "title": "Gemeinsame Geschäftsanweisungen",
-        "description": "Standardmässig aus. Der Text ergänzt neutrale Agent-Basisprompts und HA-Werkzeuginstruktionen; er ersetzt sie nicht exklusiv. Alle aktiven Agents müssen geprüft sein. Änderungen, Aktivierung und Deaktivierung erfordern neue Gespräche. Die Basisprompts werden ausschliesslich manuell in den vorhandenen Agent-Dialogen migriert.",
+        "description": "Optionaler Zusatz zum Prompt des jeweiligen Agents, kein Ersatz. Prüfe auf widersprüchliche Anweisungen. Änderungen benötigen ein neues Gespräch. Frühere agentenspezifische Router-Zusätze bleiben erhalten, bis sie unten entfernt werden.",
         "data": {
           "enabled": "Zentrale Zusätze aktivieren",
           "text": "Gemeinsamer Prompt (mehrzeilig, wörtlicher Text)",
-          "acknowledge_additive": "Ich verstehe die additive Wirkung und die erforderlichen neuen Gespräche"
+          "acknowledge_additive": "Ich verstehe die additive Wirkung und die erforderlichen neuen Gespräche",
+          "clear_legacy_additions": "Bisherige individuelle Router-Promptzusätze entfernen"
         }
       },
       "agent_prompt": {
@@ -142,14 +143,14 @@
     "step": {
       "order": {
         "title": "Agents auswählen und sortieren",
-        "description": "Reihenfolge von oben nach unten. Agents hinzufügen, entfernen und per Ziehen sortieren; Health-Einstellungen bleiben an ihrer Entity-ID. Neue Agents sind aktiviert. Alternativ Position im Menü ändern.",
+        "description": "Aktive Agents auswählen und nach Priorität sortieren. Entfernte Agents bleiben mit ihren Health-Checks inaktiv gespeichert und können später wieder hinzugefügt werden.",
         "data": {
           "agent_order": "Agents in Prioritätsreihenfolge"
         }
       },
       "manage": {
         "title": "Assist Router konfigurieren",
-        "description": "Aktuelle Reihenfolge (✓ aktiviert, – deaktiviert):\n{agents}\n\nÄnderungen werden erst mit Speichern übernommen.\n\nSicherheitsmodus: {mode}. Bestehende 1.2.1-Einträge bleiben nach Migration in Strict.",
+        "description": "Reihenfolge (✓ aktiv, – inaktiv):\n{agents}\n\nÄnderungen werden erst mit Speichern übernommen. Die frühere Prompt- und Backend-Prüfung entfällt; Agents und ihre Einstellungen liegen in deiner Verantwortung.",
         "menu_options": {
           "order": "Agents auswählen, sortieren oder entfernen",
           "position": "Position eines Agents ändern",
@@ -210,11 +211,12 @@
       },
       "shared_prompt": {
         "title": "Gemeinsame Geschäftsanweisungen",
-        "description": "Standardmässig aus. Der Text ergänzt neutrale Agent-Basisprompts und HA-Werkzeuginstruktionen; er ersetzt sie nicht exklusiv. Alle aktiven Agents müssen geprüft sein. Änderungen, Aktivierung und Deaktivierung erfordern neue Gespräche. Die Basisprompts werden ausschliesslich manuell in den vorhandenen Agent-Dialogen migriert.",
+        "description": "Optionaler Zusatz zum Prompt des jeweiligen Agents, kein Ersatz. Prüfe auf widersprüchliche Anweisungen. Änderungen benötigen ein neues Gespräch. Frühere agentenspezifische Router-Zusätze bleiben erhalten, bis sie unten entfernt werden.",
         "data": {
           "enabled": "Zentrale Zusätze aktivieren",
           "text": "Gemeinsamer Prompt (mehrzeilig, wörtlicher Text)",
-          "acknowledge_additive": "Ich verstehe die additive Wirkung und die erforderlichen neuen Gespräche"
+          "acknowledge_additive": "Ich verstehe die additive Wirkung und die erforderlichen neuen Gespräche",
+          "clear_legacy_additions": "Bisherige individuelle Router-Promptzusätze entfernen"
         }
       },
       "agent_prompt": {

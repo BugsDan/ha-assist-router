@@ -56,54 +56,47 @@ async def test_enabled_stable_literal_unicode_and_follow_up(ha, settings_data):
     assert [call[0].extra_system_prompt for call in agent.calls] == [expected, expected]
     assert all(call[0].conversation_id == first.conversation_id for call in agent.calls)
     assert router.runtime.ledger.sessions[first.conversation_id].pending_agent == agent.entity_id
-    assert inspector.inspect.await_count == 12  # all three active targets, twice per turn
+    inspector.inspect.assert_not_called()
     assert first.response.data["nested"]["tool_args"]["name"] == "Café e\u0301 🥐"
 
 
 @pytest.mark.parametrize(
     "reason", ["unknown_source", "base_not_neutral", "agent_not_loaded", "unsupported_integration", "ready"]
 )
-async def test_any_active_unreviewed_target_blocks_globally_before_health(ha, settings_data, reason):
+async def test_unreviewed_target_does_not_block_routing(ha, settings_data, reason):
     from custom_components.assist_router.prompts import PromptSnapshot
 
     router = setup_router(ha, settings_data)
     agents = [add_agent(ha, entity_id) for entity_id in router.runtime.settings.agents]
     inspector = enable(ha, router)
-    inspector.inspect.side_effect = [PromptSnapshot("ready", DIGEST), PromptSnapshot(reason, "b" * 64)]
+    inspector.inspect.return_value = PromptSnapshot(reason, "b" * 64)
     result = await ask(ha, router)
-    assert result.response.response_type == ha.intent.IntentResponseType.ERROR
-    assert not any(agent.calls for agent in agents)
-    router.runtime.health.check.assert_not_awaited()
-    state = router.runtime.ledger.sessions[result.conversation_id]
-    assert state.prompt_stale and not state.blocked
+    assert result.response.response_type != ha.intent.IntentResponseType.ERROR
+    assert len(agents[0].calls) == 1 and not agents[1].calls
+    inspector.inspect.assert_not_called()
 
 
-async def test_config_drift_during_health_await_never_dispatches(ha, settings_data):
-    from custom_components.assist_router.prompts import PromptSnapshot
-
+async def test_no_inspection_during_health_await(ha, settings_data):
     router = setup_router(ha, settings_data)
     agent = add_agent(ha, router.runtime.settings.agents[0])
     inspector = enable(ha, router)
-    inspector.inspect.side_effect = [
-        *[PromptSnapshot("ready", DIGEST)] * 3,
-        PromptSnapshot("ready", "b" * 64),
-    ]
-    result = await ask(ha, router)
-    assert result.response.response_type == ha.intent.IntentResponseType.ERROR and not agent.calls
-    router.runtime.health.check.assert_awaited_once()
+    inspector.inspect.side_effect = AssertionError("unexpected inspection")
+    await ask(ha, router)
+    assert len(agent.calls) == 1
+    inspector.inspect.assert_not_called()
 
 
-async def test_inspection_exception_is_fail_closed_without_leaking_secret(ha, settings_data):
+async def test_no_inspection_or_secret_leak(ha, settings_data):
     router = setup_router(ha, settings_data)
     agent = add_agent(ha, router.runtime.settings.agents[0])
     inspector = enable(ha, router)
     inspector.inspect.side_effect = RuntimeError("secret-token")
     result = await ask(ha, router)
-    assert not agent.calls and "secret-token" not in repr(result)
-    assert router.runtime.prompts.last["reason"] == "inspection_error"
+    assert len(agent.calls) == 1 and "secret-token" not in repr(result)
+    inspector.inspect.assert_not_called()
 
 
-@pytest.mark.parametrize("change", ["shared", "addition", "review", "disable"])
+@pytest.mark.parametrize("change", ["shared", "addition", "disable"])
 async def test_prompt_changes_require_new_conversation_with_same_ledger(ha, settings_data, change):
     from custom_components.assist_router.prompts import PromptManager
     from custom_components.assist_router.settings import Settings
@@ -316,34 +309,16 @@ async def test_v11_migration_is_default_off_and_only_own_entry_updated(ha, setti
     )
 
 
-async def test_ui_opt_in_requires_review_and_never_migrates_targets(ha, monkeypatch):
-    from custom_components.assist_router.prompts import PromptSnapshot
-
+async def test_ui_opt_in_saves_without_review(ha, monkeypatch):
     _, flow = new_flow(ha, monkeypatch)
     await flow.async_step_user({"agent_order": ["conversation.a", "conversation.b"]})
-    await flow.async_step_security_mode({"mode": "strict"})
     result = await flow.async_step_shared_prompt({"enabled": True, "text": TEXT})
     assert result["errors"]["base"] == "acknowledge_additive"
-    values = result["data_schema"]({"enabled": True, "text": TEXT, "acknowledge_additive": True})
-    assert values["text"] == TEXT
-    assert any(
-        getattr(value, "config", {}).get("multiline") for value in result["data_schema"].schema.values()
-    )
-    await flow.async_step_shared_prompt(values)
-    await flow.async_step_agent_prompt({"entity_id": "conversation.b"})
-    await flow.async_step_agent_prompt_text({"text": "Ergänzung é\nü"})
-    inspector = SimpleNamespace(inspect=AsyncMock(return_value=PromptSnapshot("ready", DIGEST)))
-    flow._inspector = inspector
-    assert (await flow.async_step_finish())["errors"]["base"] == "prompt_review_required"
-    for entity_id in flow._ids():
-        form = await flow.async_step_prompt_review({"entity_id": entity_id})
-        assert form["description_placeholders"]["fingerprint"] == DIGEST
-        assert (await flow.async_step_prompt_review_confirm({"confirm": True}))["type"] == "menu"
+    await flow.async_step_shared_prompt({"enabled": True, "text": TEXT, "acknowledge_additive": True})
     await flow.async_step_order({"agent_order": ["conversation.b", "conversation.a"]})
     saved = await flow.async_step_finish()
     assert saved["options"]["prompt"]["enabled"] and saved["options"]["prompt"]["text"] == TEXT
-    assert saved["options"]["agents"][0]["prompt_addition"] == "Ergänzung é\nü"
-    assert saved["options"]["prompt"]["reviews"] == {entity_id: DIGEST for entity_id in flow._ids()}
+    assert [x["entity_id"] for x in saved["options"]["agents"]] == ["conversation.b", "conversation.a"]
 
 
 async def test_review_ui_rejects_prompt_changed_while_form_open(ha, monkeypatch):
@@ -372,7 +347,7 @@ def test_invalid_prompt_rejected_without_coercing(ha, value):
         PromptSettings.from_mapping({"text": value})
 
 
-async def test_diagnostics_contains_fingerprints_but_no_prompt_or_secret(ha, settings_data):
+async def test_diagnostics_contains_no_prompt_fingerprints_or_secret(ha, settings_data):
     from custom_components.assist_router.diagnostics import async_get_config_entry_diagnostics
 
     router = setup_router(ha, settings_data)
@@ -381,7 +356,7 @@ async def test_diagnostics_contains_fingerprints_but_no_prompt_or_secret(ha, set
     diagnostic = await async_get_config_entry_diagnostics(
         ha.hass, SimpleNamespace(runtime_data=router.runtime)
     )
-    assert diagnostic["prompt"]["enabled"] and DIGEST in repr(diagnostic)
+    assert diagnostic["prompt"]["enabled"] and DIGEST not in repr(diagnostic)
     assert TEXT not in repr(diagnostic) and "Agent: Café" not in repr(diagnostic)
 
 
@@ -425,36 +400,37 @@ async def test_installed_chatlog_source_must_match_pinned_reference(ha, monkeypa
     assert (await inspector.inspect("conversation.alpha")).reason == "unknown_ha_source"
 
 
-async def test_unload_during_second_review_does_not_dispatch(ha, settings_data):
-    from custom_components.assist_router.prompts import PromptSnapshot
+async def test_unload_during_health_check_does_not_dispatch(ha, settings_data):
+    from custom_components.assist_router.health import Health
 
     router = setup_router(ha, settings_data)
     agent = add_agent(ha, router.runtime.settings.agents[0])
-    inspector = enable(ha, router)
-    count = 0
 
     async def check(entity_id):
-        nonlocal count
-        count += 1
-        if count == 4:
-            router.runtime.active = False
-        return PromptSnapshot("ready", DIGEST)
+        router.runtime.active = False
+        return Health(True, "ready")
 
-    inspector.inspect.side_effect = check
+    router.runtime.health.check.side_effect = check
     result = await ask(ha, router)
     assert result.response.response_type == ha.intent.IntentResponseType.ERROR and not agent.calls
 
 
-async def test_rejected_conversation_stays_stale_after_configuration_restored(ha, settings_data):
-    from custom_components.assist_router.prompts import PromptSnapshot
+async def test_prompt_changed_conversation_stays_stale_after_restore(ha, settings_data):
+    from custom_components.assist_router.prompts import PromptManager
+    from custom_components.assist_router.settings import Settings
 
     router = setup_router(ha, settings_data)
     agent = add_agent(ha, router.runtime.settings.agents[0])
-    inspector = enable(ha, router)
+    enable(ha, router)
+    original = router.runtime.settings
     first = await ask(ha, router)
-    inspector.inspect.return_value = PromptSnapshot("base_not_neutral", DIGEST)
+    config = original.as_dict()
+    config["prompt"]["text"] += " changed"
+    router.runtime.settings = Settings.from_mapping(config)
+    router.runtime.prompts = PromptManager(router.runtime.settings)
     await ask(ha, router, cid=first.conversation_id)
-    inspector.inspect.return_value = PromptSnapshot("ready", DIGEST)
+    router.runtime.settings = original
+    router.runtime.prompts = PromptManager(original)
     await ask(ha, router, cid=first.conversation_id)
     assert len(agent.calls) == 1
     await ask(ha, router)

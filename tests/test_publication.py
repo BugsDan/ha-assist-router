@@ -81,7 +81,7 @@ def test_hacs_layout_and_local_icons_match_documented_versions():
 
 
 def test_repository_metadata_and_hygiene_pass():
-    assert tool("check_repository").validate(tag="v1.3.0") == []
+    assert tool("check_repository").validate(tag="v1.4.0") == []
 
 
 def test_generated_json_is_reproducible_utf8_lf(monkeypatch, tmp_path):

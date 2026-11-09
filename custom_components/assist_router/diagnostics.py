@@ -7,15 +7,11 @@ async def async_get_config_entry_diagnostics(hass, entry):
     return {
         "active": runtime.active,
         "last_agent": runtime.last_agent,
-        "last_configured_model": runtime.prompts.checks.get(runtime.last_agent, {}).get("model"),
         "last_reason": runtime.last_reason,
         "tools": dict(runtime.last_tools),
         "prompt": {
             "enabled": runtime.settings.prompt.enabled,
-            "mode": runtime.settings.prompt.mode,
             "revision": runtime.prompts.revision,
-            "last_check": runtime.prompts.last,
-            "agent_checks": runtime.prompts.checks,
         },
         "health": runtime.health.diagnostics(),
         "agents": [

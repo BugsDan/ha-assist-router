@@ -237,7 +237,7 @@ async def test_standard_routes_to_next_approved_agent_when_first_is_unloaded(ha,
     assert router.runtime.last_agent == "conversation.beta"
 
 
-async def test_real_standard_review_ui_persists_only_after_confirm_and_finish(ha, monkeypatch):
+async def test_save_prompt_does_not_read_or_modify_agent_config(ha, monkeypatch):
     inspector, entry, _, _ = standard_fixture(ha, monkeypatch)
     _, flow = new_flow(ha, monkeypatch)
     await flow.async_step_user({"agent_order": ["conversation.alpha"]})
@@ -245,20 +245,10 @@ async def test_real_standard_review_ui_persists_only_after_confirm_and_finish(ha
     await flow.async_step_shared_prompt(
         {"enabled": True, "text": "Gemeinsam: é", "acknowledge_additive": True}
     )
-    await flow.async_step_prompt_review({"entity_id": "conversation.alpha"})
-    assert (await flow.async_step_prompt_review_confirm({"confirm": False}))["errors"][
-        "base"
-    ] == "prompt_confirm_required"
     entry.data["base_url"] = "https://new-backend.example/v1"
-    assert (await flow.async_step_prompt_review_confirm({"confirm": True}))["errors"][
-        "base"
-    ] == "prompt_changed"
-    assert flow._draft["prompt"]["approvals"] == {}
-    await flow.async_step_prompt_review_confirm({"confirm": True})
     saved = await flow.async_step_finish()
     assert saved["type"] == "create_entry"
-    assert saved["options"]["prompt"]["mode"] == "standard"
-    assert len(saved["options"]["prompt"]["approvals"]["conversation.alpha"]) == 64
+    assert saved["options"]["prompt"]["text"] == "Gemeinsam: é"
     ha.hass.config_entries.async_update_entry.assert_not_called()
 
 
@@ -355,19 +345,11 @@ async def test_standard_inspector_never_reads_ha_or_agent_source(ha, monkeypatch
     prompts.inspect.getsourcefile.assert_not_called()
 
 
-async def test_mode_switch_requires_explicit_confirmation_and_separate_approval(ha, monkeypatch):
+async def test_menu_omits_legacy_security_modes(ha, monkeypatch):
     _, flow = new_flow(ha, monkeypatch)
-    await flow.async_step_user({"agent_order": ["conversation.alpha"]})
-    assert flow._draft["prompt"]["mode"] == "standard"
-    await flow.async_step_security_mode({"mode": "strict"})
-    flow._draft["prompt"]["reviews"] = {"conversation.alpha": "a" * 64}
-    for value in ({"mode": "standard"}, {"mode": "standard", "confirm_standard": False}):
-        form = await flow.async_step_security_mode(value)
-        assert form["errors"]["base"] == "confirm_standard_required"
-        assert flow._draft["prompt"]["mode"] == "strict"
-    await flow.async_step_security_mode({"mode": "standard", "confirm_standard": True})
-    assert flow._draft["prompt"]["approvals"] == {}
-    assert flow._draft["prompt"]["reviews"] == {"conversation.alpha": "a" * 64}
+    menu = await flow.async_step_user({"agent_order": ["conversation.alpha"]})
+    assert "security_mode" not in menu["menu_options"]
+    assert "prompt_review" not in menu["menu_options"]
 
 
 @pytest.mark.parametrize("enabled", [False, True])

@@ -6,7 +6,6 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from .const import DOMAIN
 from .health import HealthChecks
 from .migration import migrate_v1
-from .prompts import PromptManager, async_make_inspector
 from .runtime import Ledger, Runtime
 from .settings import Settings
 
@@ -19,10 +18,6 @@ async def async_setup_entry(hass, entry):
     ledgers = hass.data.setdefault(DOMAIN, {})
     ledger = ledgers.setdefault(entry.entry_id, Ledger())
     entry.runtime_data = Runtime(settings, HealthChecks(async_get_clientsession(hass), settings), ledger)
-    if settings.prompt.enabled:
-        entry.runtime_data.prompts = PromptManager(
-            settings, await async_make_inspector(hass, settings.prompt.mode)
-        )
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(_async_options_updated))
     return True

@@ -128,9 +128,6 @@ class AssistRouter(conversation.ConversationEntity):
                 chat_log.conversation_id,
                 "Die Prompt-Konfiguration dieses Gesprächs ist veraltet. Bitte ein neues Gespräch beginnen.",
             )
-        if not await runtime.prompts.validate():
-            state.prompt_stale = True
-            return self._prompt_error(user_input, chat_log)
         agent_id = await runtime.select(state, self._eligible)
         if agent_id is None:
             return self._error(
@@ -142,10 +139,6 @@ class AssistRouter(conversation.ConversationEntity):
                 else "Derzeit ist kein Conversation Agent verfügbar.",
                 chat_log,
             )
-        # Health checks yield to HA: review again in case a target changed meanwhile.
-        if not await runtime.prompts.validate():
-            state.prompt_stale = True
-            return self._prompt_error(user_input, chat_log)
         if not runtime.active:
             return self._error(user_input, chat_log.conversation_id, "Der Router wird neu geladen.")
         # Every error below is AFTER dispatch: never call a different agent here.
@@ -200,12 +193,3 @@ class AssistRouter(conversation.ConversationEntity):
             )
         finally:
             runtime.observe_tools(chat_log, tool_start, agent_id)
-
-    def _prompt_error(self, user_input, chat_log):
-        self.runtime.last_reason = "prompt_review_required"
-        return self._error(
-            user_input,
-            chat_log.conversation_id,
-            "Die Agent-Prompt-Prüfung ist nicht freigegeben oder hat sich geändert. "
-            "Bitte die Prompt-Prüfung in den Router-Optionen durchführen und ein neues Gespräch beginnen.",
-        )

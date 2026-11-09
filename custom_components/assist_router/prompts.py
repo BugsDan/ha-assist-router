@@ -384,7 +384,6 @@ class PromptManager:
             )
             for route in settings.routes
         }
-        reviews = settings.prompt.reviews if settings.prompt.mode == "strict" else settings.prompt.approvals
         self.revision = (
             PASSTHROUGH_REVISION
             if not settings.prompt.enabled
@@ -394,7 +393,6 @@ class PromptManager:
                     "agents": {
                         route.entity_id: {
                             "addition": route.prompt_addition,
-                            "review": reviews.get(route.entity_id),
                         }
                         for route in settings.routes
                         if route.enabled
@@ -402,8 +400,6 @@ class PromptManager:
                 }
             )
         )
-        if settings.prompt.enabled and settings.prompt.mode == "standard":
-            self.revision = fingerprint({"mode": "standard", "revision": self.revision})
 
     async def validate(self):
         if not self.settings.prompt.enabled:

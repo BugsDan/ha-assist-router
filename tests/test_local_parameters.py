@@ -185,7 +185,7 @@ async def test_allowed_parameters_stay_fingerprinted_and_require_new_review(
     settings_data["prompt"]["reviews"]["conversation.alpha"] = current.fingerprint
     reviewed_manager = PromptManager(Settings.from_mapping(settings_data), inspector)
     assert await reviewed_manager.validate()
-    assert reviewed_manager.revision != manager.revision  # old conversations must start anew
+    assert reviewed_manager.revision == manager.revision  # approvals no longer affect prompt revision
 
 
 @pytest.mark.parametrize("target", ["effort", "thinking", "native_thinking"])

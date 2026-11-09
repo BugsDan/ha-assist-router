@@ -1,4 +1,4 @@
-"""HA UI: sortable entities, activation, positions and optional per-agent probes."""
+"""HA UI for ordered agents, optional health checks and shared instructions."""
 
 from copy import deepcopy
 from dataclasses import asdict
@@ -11,7 +11,7 @@ from homeassistant.helpers import selector
 
 from .const import DOMAIN
 from .health_types import CHECK_TYPES
-from .prompts import NEUTRAL_BASELINE, PromptManager, async_make_inspector
+from .prompts import NEUTRAL_BASELINE, async_make_inspector
 from .settings import HealthSettings, PromptSettings, Settings, valid_agent_id, validate_prompt_text
 
 
@@ -141,7 +141,7 @@ class RoutingFlow:
         ]
 
     def _ids(self):
-        return [item["entity_id"] for item in self._draft["agents"]]
+        return [item["entity_id"] for item in self._draft["agents"] if item["enabled"]]
 
     def _menu(self):
         summary = "\n".join(
@@ -153,13 +153,8 @@ class RoutingFlow:
             step_id="manage",
             menu_options=[
                 "order",
-                "position",
-                "enabled",
                 "health_agent",
                 "shared_prompt",
-                "security_mode",
-                "agent_prompt",
-                "prompt_review",
                 "finish",
             ],
             description_placeholders={"agents": summary, "mode": self._draft["prompt"].get("mode", "strict")},
@@ -184,10 +179,16 @@ class RoutingFlow:
                 draft = {
                     **self._draft,
                     "agents": [
-                        deepcopy(
-                            existing.get(entity_id, {"entity_id": entity_id, "enabled": True, "health": None})
-                        )
+                        {
+                            **deepcopy(existing.get(entity_id, {"entity_id": entity_id, "health": None})),
+                            "enabled": True,
+                        }
                         for entity_id in order
+                    ]
+                    + [
+                        {**deepcopy(item), "enabled": False}
+                        for item in self._draft["agents"]
+                        if item["entity_id"] not in order
                     ],
                 }
                 try:
@@ -317,8 +318,12 @@ class RoutingFlow:
                 self._route()["health"] = result
                 return self._menu()
         # Submitted passwords/tokens are never echoed back after validation errors.
+        display = {
+            **previous,
+            **{k: v for k, v in (user_input or {}).items() if k not in ("token", "password")},
+        }
         return self.async_show_form(
-            step_id="health", errors=errors, data_schema=health_schema(previous, self._health_kind)
+            step_id="health", errors=errors, data_schema=health_schema(display, self._health_kind)
         )
 
     async def async_step_shared_prompt(self, user_input=None):
@@ -338,6 +343,9 @@ class RoutingFlow:
                 errors["base"] = str(err)
             else:
                 self._draft["prompt"] = values
+                if user_input.get("clear_legacy_additions", False):
+                    for route in self._draft["agents"]:
+                        route["prompt_addition"] = ""
                 return self._menu()
         return self.async_show_form(
             step_id="shared_prompt",
@@ -349,6 +357,7 @@ class RoutingFlow:
                         selector.TextSelectorConfig(multiline=True)
                     ),
                     vol.Required("acknowledge_additive", default=False): selector.BooleanSelector(),
+                    vol.Optional("clear_legacy_additions", default=False): selector.BooleanSelector(),
                 }
             ),
         )
@@ -486,15 +495,9 @@ class RoutingFlow:
         try:
             config = Settings.from_mapping(self._draft).as_dict()
         except ValueError:
-            return await self.async_step_enabled({"enabled_agents": []})
+            return await self.async_step_order({"agent_order": []})
         if any(item["entity_id"] in self._excluded() for item in config["agents"]):
             return await self.async_step_order({"agent_order": []})
-        if config["prompt"]["enabled"]:
-            manager = PromptManager(Settings.from_mapping(config), await self._get_inspector())
-            if not await manager.validate():
-                form = await self.async_step_prompt_review()
-                form["errors"] = {"base": "prompt_review_required"}
-                return form
         return self._save(config)
 
 
@@ -505,7 +508,18 @@ class ConfigFlow(RoutingFlow, config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_user(self, user_input=None):
         if self._async_current_entries():
             return self.async_abort(reason="single_instance_allowed")
-        self._start({"agents": [], "prompt": asdict(PromptSettings(mode="standard"))})
+        self._start(
+            {
+                "agents": [],
+                "prompt": asdict(
+                    PromptSettings(
+                        text="You are a voice assistant for Home Assistant.\n"
+                        "Answer questions about the world truthfully.\n"
+                        "Respond simply and to the point in plain text."
+                    )
+                ),
+            }
+        )
         return await self.async_step_order(user_input)
 
     def _save(self, config):

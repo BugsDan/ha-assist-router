@@ -4,14 +4,14 @@
     "step": {
       "order": {
         "title": "Select and order agents",
-        "description": "Priority is top to bottom. Add, remove or drag entities to reorder. Health checks remain bound to the entity ID. New agents are enabled. A position dialog is available in the menu.",
+        "description": "Select active agents in priority order. Removed agents and their health checks are retained inactive and can be added again.",
         "data": {
           "agent_order": "Agents in priority order"
         }
       },
       "manage": {
         "title": "Configure Assist Router",
-        "description": "Current order (✓ enabled, – disabled):\n{agents}\n\nChanges are applied only when you choose Save.\n\nSecurity mode: {mode}. Existing 1.2.1 entries stay in Strict after migration.",
+        "description": "Order (✓ active, – inactive):\n{agents}\n\nChanges apply only after Save. Previous prompt and backend verification is removed; agent settings are your responsibility.",
         "menu_options": {
           "order": "Select, order or remove agents",
           "position": "Change an agent position",
@@ -72,11 +72,12 @@
       },
       "shared_prompt": {
         "title": "Shared business instructions",
-        "description": "Off by default. This text supplements neutral agent baselines and HA tool instructions; it does not replace them exclusively. All active agents need review. Changes, enabling and disabling require new conversations. Migrate baselines manually in the existing agent dialogs.",
+        "description": "Optional addition to each agent's prompt, not a replacement. Check for conflicting instructions. Changes require a new conversation. Legacy per-agent router additions are preserved until removed below.",
         "data": {
           "enabled": "Enable shared additions",
           "text": "Shared prompt (multiline literal text)",
-          "acknowledge_additive": "I understand the additive behavior and new-conversation requirement"
+          "acknowledge_additive": "I understand the additive behavior and new-conversation requirement",
+          "clear_legacy_additions": "Remove legacy per-agent router prompt additions"
         }
       },
       "agent_prompt": {
@@ -142,14 +143,14 @@
     "step": {
       "order": {
         "title": "Select and order agents",
-        "description": "Priority is top to bottom. Add, remove or drag entities to reorder. Health checks remain bound to the entity ID. New agents are enabled. A position dialog is available in the menu.",
+        "description": "Select active agents in priority order. Removed agents and their health checks are retained inactive and can be added again.",
         "data": {
           "agent_order": "Agents in priority order"
         }
       },
       "manage": {
         "title": "Configure Assist Router",
-        "description": "Current order (✓ enabled, – disabled):\n{agents}\n\nChanges are applied only when you choose Save.\n\nSecurity mode: {mode}. Existing 1.2.1 entries stay in Strict after migration.",
+        "description": "Order (✓ active, – inactive):\n{agents}\n\nChanges apply only after Save. Previous prompt and backend verification is removed; agent settings are your responsibility.",
         "menu_options": {
           "order": "Select, order or remove agents",
           "position": "Change an agent position",
@@ -210,11 +211,12 @@
       },
       "shared_prompt": {
         "title": "Shared business instructions",
-        "description": "Off by default. This text supplements neutral agent baselines and HA tool instructions; it does not replace them exclusively. All active agents need review. Changes, enabling and disabling require new conversations. Migrate baselines manually in the existing agent dialogs.",
+        "description": "Optional addition to each agent's prompt, not a replacement. Check for conflicting instructions. Changes require a new conversation. Legacy per-agent router additions are preserved until removed below.",
         "data": {
           "enabled": "Enable shared additions",
           "text": "Shared prompt (multiline literal text)",
-          "acknowledge_additive": "I understand the additive behavior and new-conversation requirement"
+          "acknowledge_additive": "I understand the additive behavior and new-conversation requirement",
+          "clear_legacy_additions": "Remove legacy per-agent router prompt additions"
         }
       },
       "agent_prompt": {

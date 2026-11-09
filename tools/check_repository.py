@@ -21,6 +21,7 @@ def baseline_errors(root=ROOT):
     policy_delta = (
         {
             "__init__.py",
+            "const.py",
             "config_flow.py",
             "settings.py",
             "prompts.py",
@@ -32,7 +33,7 @@ def baseline_errors(root=ROOT):
             "translations/de.json",
             "translations/en.json",
         }
-        if after["version"] == "1.3.0"
+        if after["version"] == "1.4.0"
         else set()
     )
     # Only the generated JSON moved from CRLF to LF. Reconstruct the old bytes
@@ -64,7 +65,7 @@ def baseline_errors(root=ROOT):
     before = baseline["manifest_before"]
     after = json.loads((component / "manifest.json").read_text(encoding="utf-8"))
     cosmetic = {"codeowners", "documentation", "issue_tracker"}
-    if after["version"] == "1.3.0":
+    if after["version"] == "1.4.0":
         cosmetic.add("version")
     if {k: v for k, v in before.items() if k not in cosmetic} != {
         k: v for k, v in after.items() if k not in cosmetic
@@ -88,10 +89,10 @@ def validate(root=ROOT, tag=None):
     hacs = json.loads((root / "hacs.json").read_text(encoding="utf-8"))
     project = tomllib.loads((root / "pyproject.toml").read_text(encoding="utf-8"))
     base = "https://github.com/BugsDan/ha-assist-router"
-    if manifest["version"] != "1.3.0" or project["project"]["version"] != manifest["version"]:
-        errors.append("Development version must be 1.3.0")
-    if tag is not None and tag != "v1.3.0":
-        errors.append("Expected development tag v1.3.0")
+    if manifest["version"] != "1.4.0" or project["project"]["version"] != manifest["version"]:
+        errors.append("Development version must be 1.4.0")
+    if tag is not None and tag != "v1.4.0":
+        errors.append("Expected development tag v1.4.0")
     if manifest["domain"] != "assist_router" or manifest["codeowners"] != ["@BugsDan"]:
         errors.append("Domain/owner mismatch")
     if manifest.get("documentation") != base or manifest.get("issue_tracker") != base + "/issues":
@@ -141,5 +142,7 @@ if __name__ == "__main__":
     errors = validate(tag=args.tag)
     for error in errors:
         print(error)
-    print(f"Repository review: {len(errors)} findings; development 1.3.0, pinned Strict contracts unchanged.")
+    print(
+        f"Repository review: {len(errors)} findings; development 1.4.0, historical source contracts unchanged."
+    )
     raise SystemExit(bool(errors))
